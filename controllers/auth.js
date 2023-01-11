@@ -49,7 +49,7 @@ exports.signup = async (req, res) => {
         if (!firstName || !lastName || !email || !password || !cpassword || !gender) return res.status(400).json({
             error: "All Fields are required!"
         })
-        let profilePic = `https://ui-avatars.com/api/?name={${firstName+lastName}`
+        let profilePic = `https://ui-avatars.com/api/?name=${firstName+lastName}`
 
 
         const exists = await User.findOne({ email })
