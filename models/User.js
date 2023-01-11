@@ -21,10 +21,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    photo: {
-      type: String,
-      default: "",
-    },
     token: {
       type: String,
     },
@@ -34,6 +30,10 @@ const userSchema = new Schema(
     profilePic: {
       type: String
     },
+    username :{
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );
