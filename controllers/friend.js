@@ -109,7 +109,7 @@ exports.getFriends = async (req, res) => {
       "friends",
      [ "firstName", "lastName", "username" , "profilePic"]
     );
-    res.json(user);
+    res.json(user.friends);
   } catch (error) {
     console.log(error);
     res.status(400).json({
@@ -124,7 +124,7 @@ exports.getRequests = async (req, res) => {
       "requests",
      [ "firstName", "lastName", "username" , "profilePic"]
     );
-    res.json(user);
+    res.json(user.requests);
   } catch (error) {
     console.log(error);
     res.status(400).json({
