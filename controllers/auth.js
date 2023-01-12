@@ -45,8 +45,8 @@ var transporter = nodemailer.createTransport({
 
 exports.signup = async (req, res) => {
   try {
-        const { firstName, lastName, email, password, cpassword, gender, username } = req.body
-        if (!firstName || !lastName || !email || !password || !cpassword || !gender || !username) return res.status(400).json({
+        const { firstName, lastName, email, password, cpassword, username } = req.body
+        if (!firstName || !lastName || !email || !password || !cpassword || !username) return res.status(400).json({
             error: "All Fields are required!"
         })
         let profilePic = `https://ui-avatars.com/api/?name=${firstName+lastName}`
@@ -65,7 +65,7 @@ exports.signup = async (req, res) => {
         if (password !== cpassword) return res.status(400).json({ error: "Enter Same Password Twice!" })
 
     const user = new User({
-            firstName, lastName, email, password, gender ,profilePic, username
+            firstName, lastName, email, password ,profilePic, username
         })
 
         await user.save()
