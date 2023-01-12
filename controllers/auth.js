@@ -112,7 +112,7 @@ exports.signin = async (req, res) => {
 
         const existingUser = await User.findOne({ email })
 
-        if (!existingUser) return res.status(400).json({ error: "Inavlid Credentials! E" })
+        if (!existingUser) return res.status(400).json({ error: "Inavlid Credentials!" })
 
     const checkPassword = await bcrypt.compare(password, existingUser.password);
 
