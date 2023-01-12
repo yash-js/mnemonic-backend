@@ -24,9 +24,6 @@ const userSchema = new Schema(
     token: {
       type: String,
     },
-    gender: {
-      type: String,
-    },
     profilePic: {
       type: String,
     },
