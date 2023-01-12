@@ -5,11 +5,11 @@ const bcrypt = require('bcryptjs');
 const Post = require('../models/Post');
 
 var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-    },
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
 });
 // const mail = {
 //     to: admin.email,
@@ -44,7 +44,7 @@ var transporter = nodemailer.createTransport({
 
 
 exports.signup = async (req, res) => {
-    try {
+  try {
         const { firstName, lastName, email, password, cpassword, gender, username } = req.body
         if (!firstName || !lastName || !email || !password || !cpassword || !gender || !username) return res.status(400).json({
             error: "All Fields are required!"
@@ -64,16 +64,16 @@ exports.signup = async (req, res) => {
 
         if (password !== cpassword) return res.status(400).json({ error: "Enter Same Password Twice!" })
 
-        const user = new User({
+    const user = new User({
             firstName, lastName, email, password, gender ,profilePic, username
         })
 
         await user.save()
-        const mail = {
-            to: email,
-            from: "yash@no-reply.com",
-            subject: "Account Successfully Registered",
-            html: `<h1>Welcome, ${firstName}. </h1>
+    const mail = {
+      to: email,
+      from: "yash@no-reply.com",
+      subject: "Account Successfully Registered",
+      html: `<h1>Welcome, ${firstName}. </h1>
 
             <h2> Mnemonic!</h2>
 
@@ -82,29 +82,29 @@ exports.signup = async (req, res) => {
             </h4>
              
             `,
-        };
-        transporter.sendMail(mail, (error, info) => {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log("Email sent: " + info.response);
-            }
-        });
+    };
+    transporter.sendMail(mail, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
 
-        return res.json({
-            user: user,
+    return res.json({
+      user: user,
             message: "User Registered"
         })
 
-    } catch (error) {
-        res.status(400).json({
+  } catch (error) {
+    res.status(400).json({
             error: error.message
         })
-    }
+  }
 }
 
 exports.signin = async (req, res) => {
-    try {
+  try {
         let token
         const { email, password } = req.body
 
@@ -114,32 +114,32 @@ exports.signin = async (req, res) => {
 
         if (!existingUser) return res.status(400).json({ error: "Inavlid Credentials! E" })
 
-        const checkPassword = await bcrypt.compare(password, existingUser.password);
+    const checkPassword = await bcrypt.compare(password, existingUser.password);
 
         if (!checkPassword) return res.status(400).json({ error: "Inavlid Credentials!" })
 
         token = await existingUser.generateToken()
 
-        await res.cookie("authToken", token, {
+    await res.cookie("authToken", token, {
             httpOnly: true
         })
 
-        return res.json({
-            message: "Success!",
+    return res.json({
+      message: "Success!",
             token
         })
 
-    } catch (error) {
-        res.status(400).json({
+  } catch (error) {
+    res.status(400).json({
             error: error.message
         })
-    }
+  }
 }
 
 exports.signout = async (req, res) => {
-    try {
-        const getUser = await User.findOne({
-            _id: req.user._id,
+  try {
+    const getUser = await User.findOne({
+      _id: req.user._id,
             token: req.cookies.authToken
         })
 
@@ -149,26 +149,26 @@ exports.signout = async (req, res) => {
             path: "/"
         })
         return res.send("Success")
-    } catch (error) {
+  } catch (error) {
         console.log(error)
-    }
+  }
 }
 
 exports.getUser = async (req, res) => {
 
-    try {
-        const findUser = await User.findOne({
+  try {
+    const findUser = await User.findOne({
             _id: req.user._id
 
         })
 
         return res.json({ user: findUser })
 
-    } catch (error) {
-        res.status(400).json({
+  } catch (error) {
+    res.status(400).json({
             error: "Something Went Wrong!"
         })
-    }
+  }
 }
 
 
@@ -319,14 +319,14 @@ exports.getUser = async (req, res) => {
 
 
 exports.post = async (req, res) => {
-    try {
+  try {
         const { postTitle, postContent, postedOn, photo, tags } = req.body
 
         if (!postTitle || !postContent || !postedOn || !photo || !tags) return res.status(400).json({
             error: "All Fields Are Required!"
         })
 
-        const findPost = await Post.findOne({
+    const findPost = await Post.findOne({
             postTitle
         })
 
@@ -337,42 +337,42 @@ exports.post = async (req, res) => {
         if (!photo) return res.status(400).json({
             error: "Something Went Wrong with Photo!"
         })
-        const uploadedRes = await cloudinary.uploader.upload(photo, {
+    const uploadedRes = await cloudinary.uploader.upload(photo, {
             upload_preset: 'mymernblogapp',
         })
 
         let photoUrl = uploadedRes.url
-        console.log(photoUrl);
+    console.log(photoUrl);
 
-        const savePost = new Post({
+    const savePost = new Post({
             postedBy: req.user.name, postTitle, postContent, postedOn, photo: photoUrl, tags
         })
 
 
         await savePost.save()
 
-        return res.json({
+    return res.json({
             message: "Posted!"
         })
 
 
-    } catch (error) {
+  } catch (error) {
         console.log(error)
-        return res.status(400).json({
+    return res.status(400).json({
             error: error.message
         })
 
-    }
+  }
 }
 
 
 exports.posts = async (req, res) => {
-    try {
+  try {
         const posts = await Post.find()
 
         return res.json(posts)
-    } catch (error) {
+  } catch (error) {
         console.log(error)
 
-    }
+  }
 }
