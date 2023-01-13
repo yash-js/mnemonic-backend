@@ -45,11 +45,14 @@ var transporter = nodemailer.createTransport({
 
 exports.signup = async (req, res) => {
   try {
-        const { firstName, lastName, email, password, cpassword, username } = req.body
+        const { firstName, lastName, email, password, cpassword, username, profilePic } = req.body
         if (!firstName || !lastName || !email || !password || !cpassword || !username) return res.status(400).json({
             error: "All Fields are required!"
         })
-        let profilePic = `https://ui-avatars.com/api/?name=${firstName+lastName}`
+        let profilePic 
+        if(!profilePic){
+          profilePic = `https://ui-avatars.com/api/?name=${firstName +"+"+lastName}`
+        }
 
 
         const exists = await User.findOne({ email })
@@ -92,7 +95,6 @@ exports.signup = async (req, res) => {
     });
 
     return res.json({
-      user: user,
             message: "User Registered"
         })
 
@@ -126,7 +128,15 @@ exports.signin = async (req, res) => {
 
     return res.json({
       message: "Success!",
-            token
+      user : {
+        firstName : existingUser.firstName,
+        lastName : existingUser.lastName,
+        profilePic:  existingUser.profilePic,
+        username : existingUser.username,
+        email :  existingUser.email,
+        friends :  existingUser.friends,
+        requests :  existingUser.requests,
+        token :  existingUser.token }
         })
 
   } catch (error) {
