@@ -92,7 +92,7 @@ exports.removeFriend = async (req, res) => {
       res.json({
         save,
         currentUser,
-        message: "Friend Request Accepted!",
+        message: "Friend  Removed!",
       });
     }
   } catch (error) {
