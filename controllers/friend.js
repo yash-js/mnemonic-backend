@@ -107,7 +107,7 @@ exports.getFriends = async (req, res) => {
   try {
     const user = await User.findById({ _id: req.user._id }).populate(
       "friends",
-     [ "firstName", "lastName", "username" , "profilePic"]
+      ["firstName", "lastName", "username", "profilePic"]
     );
     res.json(user.friends);
   } catch (error) {
@@ -122,9 +122,22 @@ exports.getRequests = async (req, res) => {
   try {
     const user = await User.findById({ _id: req.user._id }).populate(
       "requests",
-     [ "firstName", "lastName", "username" , "profilePic"]
+      ["firstName", "lastName", "username", "profilePic"]
     );
     res.json(user.requests);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      error: error.message,
+    });
+  }
+};
+
+exports.getSuggestions = async (req, res) => {
+  try {
+    const users = await User.find();
+    users.pop(req.user._id);
+    res.json(users);
   } catch (error) {
     console.log(error);
     res.status(400).json({
