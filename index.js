@@ -7,6 +7,7 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
+app.use(express.limit(1000000000000));
 
 dotenv.config({
   path: "./config.env",
