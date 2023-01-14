@@ -1,8 +1,8 @@
-const User = require('../models/User')
-const nodemailer = require("nodemailer")
+const User = require("../models/User");
+const nodemailer = require("nodemailer");
 // const { cloudinary } = require("../utils/cloudinary")
-const bcrypt = require('bcryptjs');
-const Post = require('../models/Post');
+const bcrypt = require("bcryptjs");
+const Post = require("../models/Post");
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -21,12 +21,9 @@ var transporter = nodemailer.createTransport({
 //       <em>Email Id: ${email}</em>
 //       <em>Password: ${password}</em>
 
-
 //     <h4>
 //     <a href="https://project-sms.netlify.app/admin">Click Here To Login!</a>
 //     </h4>
-
-
 
 //       <footer>
 //       <p>-Admin Dept.</p>
@@ -42,31 +39,55 @@ var transporter = nodemailer.createTransport({
 //     }
 //   });
 
-
 exports.signup = async (req, res) => {
   try {
-        const { firstName, lastName, email, password, cpassword, username, profilePic } = req.body
-        if (!firstName || !lastName || !email || !password || !cpassword || !username || !profilePic) return res.status(400).json({
-            error: "All Fields are required!"
-        })
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      cpassword,
+      username,
+      profilePic,
+    } = req.body;
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !cpassword ||
+      !username ||
+      !profilePic
+    )
+      return res.status(400).json({
+        error: "All Fields are required!",
+      });
 
-        const exists = await User.findOne({ email })
-        const existingUsername = await User.findOne({username})
-        if(existingUsername) return res.status(400).json({
-            error: "Username already taken, Please choose different username!"
-        })
+    const exists = await User.findOne({ email });
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername)
+      return res.status(400).json({
+        error: "Username already taken, Please choose different username!",
+      });
 
-        if (exists) return res.status(400).json({
-            error: "User Already Exists!"
-        })
+    if (exists)
+      return res.status(400).json({
+        error: "User Already Exists!",
+      });
 
-        if (password !== cpassword) return res.status(400).json({ error: "Enter Same Password Twice!" })
+    if (password !== cpassword)
+      return res.status(400).json({ error: "Enter Same Password Twice!" });
 
     const user = new User({
-            firstName, lastName, email, password ,profilePic, username
-        })
+      firstName,
+      lastName,
+      email,
+      password,
+      profilePic,
+      username,
+    });
 
-        await user.save()
+    await user.save();
     const mail = {
       to: email,
       from: "yash@no-reply.com",
@@ -90,92 +111,101 @@ exports.signup = async (req, res) => {
     });
 
     return res.json({
-            message: "User Registered"
-        })
-
+      message: "User Registered",
+    });
   } catch (error) {
     res.status(400).json({
-            error: error.message
-        })
+      error: error.message,
+    });
   }
-}
+};
 
 exports.signin = async (req, res) => {
   try {
-        let token
-        const { email, password } = req.body
+    let token;
+    const { email, password } = req.body;
 
-        if (!email || !password) return res.status(400).json({ error: "All Fields are Required!" })
+    if (!email || !password)
+      return res.status(400).json({ error: "All Fields are Required!" });
 
-        const existingUser = await User.findOne({ email })
+    const existingUser = await User.findOne({ email });
 
-        if (!existingUser) return res.status(400).json({ error: "Inavlid Credentials!" })
+    if (!existingUser)
+      return res.status(400).json({ error: "Inavlid Credentials!" });
 
     const checkPassword = await bcrypt.compare(password, existingUser.password);
 
-        if (!checkPassword) return res.status(400).json({ error: "Inavlid Credentials!" })
+    if (!checkPassword)
+      return res.status(400).json({ error: "Inavlid Credentials!" });
 
-        token = await existingUser.generateToken()
+    token = await existingUser.generateToken();
 
     await res.cookie("authToken", token, {
-            httpOnly: true
-        })
+      httpOnly: true,
+    });
 
     return res.json({
       message: "Success!",
-      user : {
-        firstName : existingUser.firstName,
-        lastName : existingUser.lastName,
-        profilePic:  existingUser.profilePic,
-        username : existingUser.username,
-        email :  existingUser.email,
-        friends :  existingUser.friends,
-        requests :  existingUser.requests,
-        token :  existingUser.token }
-        })
-
+      user: {
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        profilePic: existingUser.profilePic,
+        username: existingUser.username,
+        email: existingUser.email,
+        friends: existingUser.friends,
+        requests: existingUser.requests,
+        token: existingUser.token,
+      },
+    });
   } catch (error) {
     res.status(400).json({
-            error: error.message
-        })
+      error: error.message,
+    });
   }
-}
+};
 
 exports.signout = async (req, res) => {
   try {
     const getUser = await User.findOne({
       _id: req.user._id,
-            token: req.cookies.authToken
-        })
+      token: req.cookies.authToken,
+    });
 
-        getUser.token = undefined
-        await getUser.save()
-        res.clearCookie('authToken', {
-            path: "/"
-        })
-        return res.send("Success")
+    getUser.token = undefined;
+    await getUser.save();
+    res.clearCookie("authToken", {
+      path: "/",
+    });
+    return res.send("Success");
   } catch (error) {
-        console.log(error)
+    console.log(error);
   }
-}
+};
 
 exports.getUser = async (req, res) => {
-
   try {
     const findUser = await User.findOne({
-            _id: req.user._id
+      _id: req.user._id,
+    });
 
-        })
-
-        return res.json({ user: findUser })
-
+    return res.json({
+      user: {
+        firstName: findUser.firstName,
+        lastName: findUser.lastName,
+        profilePic: findUser.profilePic,
+        username: findUser.username,
+        email: findUser.email,
+        friends: findUser.friends,
+        requests: findUser.requests,
+        token: findUser.token,
+      },
+    });
   } catch (error) {
     res.status(400).json({
-            error: "Something Went Wrong!"
-        })
+      error: "Something Went Wrong!",
+    });
   }
-}
-
+};
 
 // exports.editUser = async (req, res) => {
 
@@ -284,11 +314,9 @@ exports.getUser = async (req, res) => {
 //             const id = req.user._id
 //             const { currentPassword, newPassword, confirmNewPassword } = req.body
 
-
 //             if (!currentPassword || !newPassword || !confirmNewPassword) return res.status(400).json({
 //                 error: "All Fields are required!"
 //             })
-
 
 //             const checkCurrentPassword = await bcrypt.compare(currentPassword, req.user.password)
 
@@ -296,12 +324,9 @@ exports.getUser = async (req, res) => {
 //                 error: "Password is Wrong"
 //             })
 
-
 //             if (newPassword !== confirmNewPassword) return res.status(400).json({
 //                 error: "Enter Same Password Twice!"
 //             })
-
-
 
 //             const hashPassword = await bcrypt.hash(newPassword, 12)
 
@@ -321,63 +346,63 @@ exports.getUser = async (req, res) => {
 //     }
 // }
 
-
-
 exports.post = async (req, res) => {
   try {
-        const { postTitle, postContent, postedOn, photo, tags } = req.body
+    const { postTitle, postContent, postedOn, photo, tags } = req.body;
 
-        if (!postTitle || !postContent || !postedOn || !photo || !tags) return res.status(400).json({
-            error: "All Fields Are Required!"
-        })
+    if (!postTitle || !postContent || !postedOn || !photo || !tags)
+      return res.status(400).json({
+        error: "All Fields Are Required!",
+      });
 
     const findPost = await Post.findOne({
-            postTitle
-        })
+      postTitle,
+    });
 
-        if (findPost) return res.status(400).json({
-            error: "Post With The Same Title Already Exists!"
-        })
+    if (findPost)
+      return res.status(400).json({
+        error: "Post With The Same Title Already Exists!",
+      });
 
-        if (!photo) return res.status(400).json({
-            error: "Something Went Wrong with Photo!"
-        })
+    if (!photo)
+      return res.status(400).json({
+        error: "Something Went Wrong with Photo!",
+      });
     const uploadedRes = await cloudinary.uploader.upload(photo, {
-            upload_preset: 'mymernblogapp',
-        })
+      upload_preset: "mymernblogapp",
+    });
 
-        let photoUrl = uploadedRes.url
+    let photoUrl = uploadedRes.url;
     console.log(photoUrl);
 
     const savePost = new Post({
-            postedBy: req.user.name, postTitle, postContent, postedOn, photo: photoUrl, tags
-        })
+      postedBy: req.user.name,
+      postTitle,
+      postContent,
+      postedOn,
+      photo: photoUrl,
+      tags,
+    });
 
-
-        await savePost.save()
+    await savePost.save();
 
     return res.json({
-            message: "Posted!"
-        })
-
-
+      message: "Posted!",
+    });
   } catch (error) {
-        console.log(error)
+    console.log(error);
     return res.status(400).json({
-            error: error.message
-        })
-
+      error: error.message,
+    });
   }
-}
-
+};
 
 exports.posts = async (req, res) => {
   try {
-        const posts = await Post.find()
+    const posts = await Post.find();
 
-        return res.json(posts)
+    return res.json(posts);
   } catch (error) {
-        console.log(error)
-
+    console.log(error);
   }
-}
+};
