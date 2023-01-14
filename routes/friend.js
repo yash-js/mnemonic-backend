@@ -17,11 +17,11 @@ router.get("/requests", authenticate, getRequests);
 
 router.post("/add", authenticate, addFriend);
 
-router.post("/cancel", authenticate, cancelRequest);
+router.delete("/cancel", authenticate, cancelRequest);
 
 router.post("/accept", authenticate, acceptFriend);
 
-router.post("/remove", authenticate, removeFriend);
+router.delete("/remove", authenticate, removeFriend);
 
 router.get("/suggestions", authenticate, getSuggestions);
 
