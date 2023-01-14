@@ -128,7 +128,12 @@ exports.signin = async (req, res) => {
     if (!email || !password)
       return res.status(400).json({ error: "All Fields are Required!" });
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).populate("requests", [
+      "firstName",
+      "lastName",
+      "username",
+      "profilePic",
+    ]);
 
     if (!existingUser)
       return res.status(400).json({ error: "Inavlid Credentials!" });
