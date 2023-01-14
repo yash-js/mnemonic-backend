@@ -133,6 +133,11 @@ exports.signin = async (req, res) => {
       "lastName",
       "username",
       "profilePic",
+    ]).populate("friends", [
+      "firstName",
+      "lastName",
+      "username",
+      "profilePic",
     ]);
 
     if (!existingUser)
