@@ -172,7 +172,7 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
   try {
     let token;
-    const { email, password, username } = req.body;
+    const { password, username } = req.body;
 
     if (!username)
       return res.status(400).json({
@@ -185,36 +185,9 @@ exports.signin = async (req, res) => {
         error: "Please Enter Password!",
       });
 
-    let existingUser;
-    if (emailRegex.test(username)) {
-      existingUser = await User.findOne({ email })
-        .populate("requests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("friends", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ]);
-    } else {
-      existingUser = await User.findOne({ username })
-        .populate("requests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("friends", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ]);
-    }
+    let existingUser = await User.findOne({ username })
+      .populate("requests", ["firstName", "lastName", "username", "profilePic"])
+      .populate("friends", ["firstName", "lastName", "username", "profilePic"]);
 
     if (!existingUser)
       return res.status(400).json({ error: "Inavlid Credentials!" });
@@ -267,8 +240,6 @@ exports.signout = async (req, res) => {
     console.log(error);
   }
 };
-
-
 
 // exports.editUser = async (req, res) => {
 
