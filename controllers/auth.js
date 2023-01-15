@@ -3,6 +3,10 @@ const nodemailer = require("nodemailer");
 // const { cloudinary } = require("../utils/cloudinary")
 const bcrypt = require("bcryptjs");
 const Post = require("../models/Post");
+const emailRegex = new RegExp(
+  /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
+  "gm"
+);
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -123,22 +127,40 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
   try {
     let token;
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
 
-    if (!email || !password)
+    if (!username || !password)
       return res.status(400).json({ error: "All Fields are Required!" });
-
-    const existingUser = await User.findOne({ email }).populate("requests", [
-      "firstName",
-      "lastName",
-      "username",
-      "profilePic",
-    ]).populate("friends", [
-      "firstName",
-      "lastName",
-      "username",
-      "profilePic",
-    ]);
+    let existingUser;
+    if (emailRegex.test(username)) {
+      existingUser = await User.findOne({ email })
+        .populate("requests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("friends", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ]);
+    } else {
+      existingUser = await User.findOne({ username })
+        .populate("requests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("friends", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ]);
+    }
 
     if (!existingUser)
       return res.status(400).json({ error: "Inavlid Credentials!" });
