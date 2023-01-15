@@ -268,30 +268,7 @@ exports.signout = async (req, res) => {
   }
 };
 
-exports.getUser = async (req, res) => {
-  try {
-    const findUser = await User.findOne({
-      _id: req.user._id,
-    });
 
-    return res.json({
-      user: {
-        firstName: findUser.firstName,
-        lastName: findUser.lastName,
-        profilePic: findUser.profilePic,
-        username: findUser.username,
-        email: findUser.email,
-        friends: findUser.friends,
-        requests: findUser.requests,
-        token: findUser.token,
-      },
-    });
-  } catch (error) {
-    res.status(400).json({
-      error: "Something Went Wrong!",
-    });
-  }
-};
 
 // exports.editUser = async (req, res) => {
 

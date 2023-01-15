@@ -16,6 +16,7 @@ dotenv.config({
 require("./db/conn");
 
 app.use(require("./routes/auth"));
+app.use("/user", require("./routes/user"));
 app.use("/friend", require("./routes/friend"));
 
 const port = process.env.PORT;
