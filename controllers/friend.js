@@ -4,12 +4,13 @@ exports.addFriend = async (req, res) => {
   try {
     const { id } = req.params; 
     if (id) {
-      const currentUser = await User.findById({ _id: req.user._id });
+      const currentUser = await User.findById({ _id: id });
       const save = await currentUser.updateOne({
         $push: {
           requests: id,
         },
       });
+      console.log('save',save);
       res.json({
         save,
         currentUser,
