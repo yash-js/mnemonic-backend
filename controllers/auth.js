@@ -185,7 +185,12 @@ exports.signin = async (req, res) => {
         error: "Please Enter Password!",
       });
 
-    let existingUser = await User.findOne({ username })
+    let existingUser = await User.findOne({
+      $or: [
+        { email: new RegExp("^" + username, "i") },
+        { username: new RegExp("^" + username, "i") },
+      ],
+    })
       .populate("requests", ["firstName", "lastName", "username", "profilePic"])
       .populate("friends", ["firstName", "lastName", "username", "profilePic"]);
 
