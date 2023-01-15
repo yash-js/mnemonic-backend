@@ -4,9 +4,10 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
 const Post = require("../models/Post");
 const emailRegex = new RegExp(
-  /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
-  "gm"
+  /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
 );
+
+const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{3,29}$/);
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -54,33 +55,77 @@ exports.signup = async (req, res) => {
       username,
       profilePic,
     } = req.body;
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !password ||
-      !cpassword ||
-      !username ||
-      !profilePic
-    )
-      return res.status(400).json({
-        error: "All Fields are required!",
-      });
 
-    const exists = await User.findOne({ email });
-    const existingUsername = await User.findOne({ username });
-    if (existingUsername)
+    if (firstName.length < 2) {
       return res.status(400).json({
-        error: "Username already taken, Please choose different username!",
+        field: "firstName",
+        error: "Enter Valid Firstname!",
       });
+    }
+    if (lastName.length < 2) {
+      return res.status(400).json({
+        field: "lastName",
+        error: "Enter Valid Lastname!",
+      });
+    }
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        field: "email",
+        error: "Enter Valid Email!",
+      });
+    }
+    const exists = await User.findOne({ email });
 
     if (exists)
       return res.status(400).json({
+        field: "email",
         error: "User Already Exists!",
       });
+    // if (
+    //   !firstName ||
+    //   !lastName ||
+    //   !email ||
+    //   !password ||
+    //   !cpassword ||
+    //   !username ||
+    //   !profilePic
+    // )
+    //   return res.status(400).json({
+    //     error: "All Fields are required!",
+    //   });
+    if (!usernameRegex.test(username))
+      return res.status(400).json({
+        field: "username",
+        error:
+          "Invalid Username, Length should Be greater than 4 and it can contain Alphabets(a-z) , Numbers(0-9), Period(.) and Underscore(_) only.",
+      });
+
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername)
+      return res.status(400).json({
+        field: "username",
+        error: "Username already taken, Please choose different username!",
+      });
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        field: "password",
+        error: "Password length should be greater than 8!",
+      });
+    }
+
+    if (!cpassword) {
+      return res.status(400).json({
+        field: "cpassword",
+        error: "Please Confirm Your Password!",
+      });
+    }
 
     if (password !== cpassword)
-      return res.status(400).json({ error: "Enter Same Password Twice!" });
+      return res.status(400).json({
+        field: "cpassword",
+        error: "Enter Same Password Twice!",
+      });
 
     const user = new User({
       firstName,
@@ -129,8 +174,17 @@ exports.signin = async (req, res) => {
     let token;
     const { email, password, username } = req.body;
 
-    if (!username || !password)
-      return res.status(400).json({ error: "All Fields are Required!" });
+    if (!username)
+      return res.status(400).json({
+        field: "username",
+        error: "Please Enter Username or Email!",
+      });
+    if (!password)
+      return res.status(400).json({
+        field: "password",
+        error: "Please Enter Password!",
+      });
+
     let existingUser;
     if (emailRegex.test(username)) {
       existingUser = await User.findOne({ email })
