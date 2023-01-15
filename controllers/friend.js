@@ -11,12 +11,12 @@ exports.addFriend = async (req, res) => {
           requests: id,
         },
       });
-      const saveCurrent = await currentUser.updateOne({
+     await currentUser.updateOne({
         $push: {
           sentRequests: id,
         },
       });
-      console.log("save", save);
+     
       res.json({
         save,
         currentUser,
