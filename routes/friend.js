@@ -15,13 +15,13 @@ router.get("/", authenticate, getFriends);
 
 router.get("/requests", authenticate, getRequests);
 
-router.post("/add", authenticate, addFriend);
+router.post("/add/:id", authenticate, addFriend);
 
-router.delete("/cancel", authenticate, cancelRequest);
+router.delete("/cancel/:id", authenticate, cancelRequest);
 
-router.post("/accept", authenticate, acceptFriend);
+router.post("/accept/:id", authenticate, acceptFriend);
 
-router.delete("/remove", authenticate, removeFriend);
+router.delete("/remove/:id", authenticate, removeFriend);
 
 router.get("/suggestions", authenticate, getSuggestions);
 

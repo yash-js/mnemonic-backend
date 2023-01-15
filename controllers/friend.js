@@ -2,8 +2,7 @@ const User = require("../models/User");
 
 exports.addFriend = async (req, res) => {
   try {
-    const { id } = req.body; //friend's id in request body
-    console.log(id);
+    const { id } = req.params; 
     if (id) {
       const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
@@ -27,8 +26,7 @@ exports.addFriend = async (req, res) => {
 
 exports.acceptFriend = async (req, res) => {
   try {
-    const { id } = req.body; //friend's id in request body
-    console.log(id);
+    const { id } = req.params; 
     if (id) {
       const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
@@ -55,8 +53,7 @@ exports.acceptFriend = async (req, res) => {
 
 exports.cancelRequest = async (req, res) => {
   try {
-    const { id } = req.body; //friend's id in request body
-    console.log(id);
+    const { id } = req.params; //friend's id in request body
     if (id) {
       const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
@@ -80,8 +77,7 @@ exports.cancelRequest = async (req, res) => {
 
 exports.removeFriend = async (req, res) => {
   try {
-    const { id } = req.body; //friend's id in request body
-    console.log(id);
+    const { id } = req.params; 
     if (id) {
       const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
@@ -92,7 +88,7 @@ exports.removeFriend = async (req, res) => {
       res.json({
         save,
         currentUser,
-        message: "Friend  Removed!",
+        message: "Friend Removed!",
       });
     }
   } catch (error) {
