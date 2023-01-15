@@ -43,6 +43,12 @@ const userSchema = new Schema(
         ref: "User",
       },
     ],
+    sentRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

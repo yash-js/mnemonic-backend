@@ -2,15 +2,21 @@ const User = require("../models/User");
 
 exports.addFriend = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     if (id) {
-      const currentUser = await User.findById({ _id: id });
-      const save = await currentUser.updateOne({
+      const currentUser = await User.findById({ _id: req.user._id });
+      const user = await User.findById({ _id: id });
+      const save = await user.updateOne({
         $push: {
           requests: id,
         },
       });
-      console.log('save',save);
+      const saveCurrent = await currentUser.updateOne({
+        $push: {
+          sentRequests: id,
+        },
+      });
+      console.log("save", save);
       res.json({
         save,
         currentUser,
@@ -27,7 +33,7 @@ exports.addFriend = async (req, res) => {
 
 exports.acceptFriend = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     if (id) {
       const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
@@ -78,7 +84,7 @@ exports.cancelRequest = async (req, res) => {
 
 exports.removeFriend = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     if (id) {
       const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
