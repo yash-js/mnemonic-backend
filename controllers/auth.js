@@ -204,10 +204,6 @@ exports.signin = async (req, res) => {
 
     token = await existingUser.generateToken();
 
-    await res.cookie("authToken", token, {
-      httpOnly: true,
-    });
-
     return res.json({
       message: "Success!",
       user: {
@@ -232,14 +228,13 @@ exports.signout = async (req, res) => {
   try {
     const getUser = await User.findOne({
       _id: req.user._id,
-      token: req.cookies.authToken,
+      token: req.token,
     });
-
     getUser.token = undefined;
+    req.token = undefined;
+    req.user = undefined;
+    req.userId = undefined;
     await getUser.save();
-    res.clearCookie("authToken", {
-      path: "/",
-    });
     return res.send("Success");
   } catch (error) {
     console.log(error);
