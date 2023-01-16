@@ -4,7 +4,10 @@ exports.getUser = async (req, res) => {
   try {
     const findUser = await User.findOne({
       _id: req.user._id,
-    });
+    })
+      .populate("requests", ["firstName", "lastName", "username", "profilePic"])
+      .populate("friends", ["firstName", "lastName", "username", "profilePic"])
+      .populate("sentRequests", ["firstName", "lastName", "username", "profilePic"]);
 
     return res.json({
       user: {

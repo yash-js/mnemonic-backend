@@ -192,7 +192,13 @@ exports.signin = async (req, res) => {
       ],
     })
       .populate("requests", ["firstName", "lastName", "username", "profilePic"])
-      .populate("friends", ["firstName", "lastName", "username", "profilePic"]);
+      .populate("friends", ["firstName", "lastName", "username", "profilePic"])
+      .populate("sentRequests", [
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
+      ]);
 
     if (!existingUser)
       return res.status(400).json({ error: "Inavlid Credentials!" });
