@@ -11,12 +11,32 @@ exports.addFriend = async (req, res) => {
           requests: id,
         },
       });
-     await currentUser.updateOne({
+      await currentUser.updateOne({
         $push: {
           sentRequests: id,
         },
       });
-     
+
+      await currentUser
+        .populate("requests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("friends", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("sentRequests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ]);
+
       res.json({
         save,
         currentUser,
@@ -44,6 +64,27 @@ exports.acceptFriend = async (req, res) => {
           requests: id,
         },
       });
+
+      await currentUser
+        .populate("requests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("friends", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("sentRequests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ]);
+
       res.json({
         save,
         currentUser,
@@ -68,6 +109,25 @@ exports.cancelRequest = async (req, res) => {
           requests: id,
         },
       });
+      await currentUser
+        .populate("requests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("friends", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("sentRequests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ]);
       res.json({
         save,
         currentUser,
@@ -92,6 +152,25 @@ exports.removeFriend = async (req, res) => {
           friends: id,
         },
       });
+      await currentUser
+        .populate("requests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("friends", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ])
+        .populate("sentRequests", [
+          "firstName",
+          "lastName",
+          "username",
+          "profilePic",
+        ]);
       res.json({
         save,
         currentUser,
