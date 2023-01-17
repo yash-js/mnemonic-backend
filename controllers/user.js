@@ -7,7 +7,12 @@ exports.getUser = async (req, res) => {
     })
       .populate("requests", ["firstName", "lastName", "username", "profilePic"])
       .populate("friends", ["firstName", "lastName", "username", "profilePic"])
-      .populate("sentRequests", ["firstName", "lastName", "username", "profilePic"]);
+      .populate("sentRequests", [
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
+      ]);
 
     return res.json({
       user: {
@@ -31,13 +36,15 @@ exports.getUser = async (req, res) => {
 exports.searchUser = async (req, res) => {
   try {
     const { query } = req.params;
-    console.log(query);
 
     const result = await User.find({
       $or: [
         { firstName: new RegExp("^" + query, "i") },
         { username: new RegExp("^" + query, "i") },
       ],
+      _id: {
+        $nin: req.user._id,
+      },
     });
 
     if (result) {
