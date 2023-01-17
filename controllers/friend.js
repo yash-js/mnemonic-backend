@@ -4,20 +4,7 @@ exports.addFriend = async (req, res) => {
   try {
     const { id } = req.params;
     if (id) {
-      const currentUser = await User.findById({ _id: req.user._id });
-      const user = await User.findById({ _id: id });
-      const save = await user.updateOne({
-        $push: {
-          requests: id,
-        },
-      });
-      await currentUser.updateOne({
-        $push: {
-          sentRequests: id,
-        },
-      });
-
-      await currentUser
+      const currentUser = await User.findById({ _id: req.user._id })
         .populate("requests", [
           "firstName",
           "lastName",
@@ -36,6 +23,17 @@ exports.addFriend = async (req, res) => {
           "username",
           "profilePic",
         ]);
+      const user = await User.findById({ _id: id });
+      const save = await user.updateOne({
+        $push: {
+          requests: id,
+        },
+      });
+      await currentUser.updateOne({
+        $push: {
+          sentRequests: id,
+        },
+      });
 
       res.json({
         save,
