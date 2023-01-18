@@ -78,6 +78,7 @@ exports.acceptFriend = async (req, res) => {
         },
         $pull: {
           requests: id,
+          sentRequests: id,
         },
       });
 
@@ -166,7 +167,7 @@ exports.removeFriend = async (req, res) => {
           friends: id,
         },
       });
-      
+
       res.json({
         save,
         currentUser,
@@ -216,6 +217,21 @@ exports.getSuggestions = async (req, res) => {
     const users = await User.find();
     users.pop(req.user._id);
     res.json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      error: error.message,
+    });
+  }
+};
+
+exports.getSentRequests = async (req, res) => {
+  try {
+    const user = await User.findById({ _id: req.user._id }).populate(
+      "sentRequests",
+      ["firstName", "lastName", "username", "profilePic"]
+    );
+    res.json(user.requests);
   } catch (error) {
     console.log(error);
     res.status(400).json({

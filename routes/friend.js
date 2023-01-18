@@ -7,6 +7,7 @@ const {
   getFriends,
   getRequests,
   getSuggestions,
+  getSentRequests,
 } = require("../controllers/friend");
 const authenticate = require("../middlewares/auth");
 const router = express.Router();
@@ -24,5 +25,7 @@ router.post("/accept/:id", authenticate, acceptFriend);
 router.delete("/remove/:id", authenticate, removeFriend);
 
 router.get("/suggestions", authenticate, getSuggestions);
+
+router.get('/sent',getSentRequests)
 
 module.exports = router;
