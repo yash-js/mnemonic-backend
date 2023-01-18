@@ -5,9 +5,7 @@ const authenticate = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
     const verify = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("verify", verify);
     const user = await User.findOne({ _id: verify._id });
-    console.log(user);
     if (!user) return res.send("USER NOT FOUND");
 
     req.token = token;
