@@ -38,12 +38,13 @@ exports.searchUser = async (req, res) => {
   try {
     const { query } = req.params;
 
-    const result = await User.find({
-      $or: [
-        { firstName: new RegExp("^" + query, "i") },
-        { username: new RegExp("^" + query, "i") },
-      ],
-      _id: {
+    const result = await User.find(
+      {
+          "$or":[
+              {firstName:{$regex:query}},
+              {username:{$regex:query}}
+          ],
+          _id: {
         $nin: req.user._id,
       },
     });
