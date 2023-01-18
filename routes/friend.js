@@ -26,6 +26,6 @@ router.delete("/remove/:id", authenticate, removeFriend);
 
 router.get("/suggestions", authenticate, getSuggestions);
 
-router.get('/sent',getSentRequests)
+router.get('/sent',authenticate, getSentRequests)
 
 module.exports = router;
