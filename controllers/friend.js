@@ -128,7 +128,7 @@ exports.cancelRequest = async (req, res) => {
       res.json({
         save,
         currentUser,
-        message: "Friend Request Accepted!",
+        message: "Friend Request Deleted!",
       });
     }
   } catch (error) {
