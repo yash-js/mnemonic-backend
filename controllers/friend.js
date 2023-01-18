@@ -53,6 +53,7 @@ exports.acceptFriend = async (req, res) => {
   try {
     const { id } = req.params;
     if (id) {
+      const user = await User.findById({ _id: id });
       const currentUser = await User.findById({ _id: req.user._id })
         .populate("requests", [
           "firstName",
@@ -78,6 +79,14 @@ exports.acceptFriend = async (req, res) => {
         },
         $pull: {
           requests: id,
+        },
+      });
+
+      await user.updateOne({
+        $push: {
+          friends: req.user._id,
+        },
+        $pull: {
           sentRequests: id,
         },
       });
@@ -100,6 +109,7 @@ exports.cancelRequest = async (req, res) => {
   try {
     const { id } = req.params; //friend's id in request body
     if (id) {
+      const user = await User.findById({ _id: id });
       const currentUser = await User.findById({ _id: req.user._id })
         .populate("requests", [
           "firstName",
@@ -119,12 +129,17 @@ exports.cancelRequest = async (req, res) => {
           "username",
           "profilePic",
         ]);
+
       const save = await currentUser.updateOne({
         $pull: {
           requests: id,
         },
       });
-
+       await user.updateOne({
+        $pull: {
+          sentRequests: req.user._id ,
+        },
+      });
       res.json({
         save,
         currentUser,
@@ -143,6 +158,7 @@ exports.removeFriend = async (req, res) => {
   try {
     const { id } = req.params;
     if (id) {
+      const user = await User.findById({ _id: id });
       const currentUser = await User.findById({ _id: req.user._id })
         .populate("requests", [
           "firstName",
@@ -168,6 +184,11 @@ exports.removeFriend = async (req, res) => {
         },
       });
 
+      await user.updateOne({
+        $pull: {
+          friends: req.user._id ,
+        },
+      });
       res.json({
         save,
         currentUser,
