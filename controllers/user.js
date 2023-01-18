@@ -16,6 +16,7 @@ exports.getUser = async (req, res) => {
 
     return res.json({
       user: {
+        id: findUser._id,
         firstName: findUser.firstName,
         lastName: findUser.lastName,
         profilePic: findUser.profilePic,
