@@ -231,7 +231,7 @@ exports.getSentRequests = async (req, res) => {
       "sentRequests",
       ["firstName", "lastName", "username", "profilePic"]
     );
-    res.json(user.requests);
+    res.json(user.sentRequests);
   } catch (error) {
     console.log(error);
     res.status(400).json({
