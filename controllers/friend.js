@@ -26,7 +26,7 @@ exports.addFriend = async (req, res) => {
       const user = await User.findById({ _id: id });
       const save = await user.updateOne({
         $push: {
-          requests: id,
+          requests: req.user._id,
         },
       });
       await currentUser.updateOne({
