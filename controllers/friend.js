@@ -5,24 +5,6 @@ exports.addFriend = async (req, res) => {
     const { id } = req.params;
     if (id) {
       const currentUser = await User.findById({ _id: req.user._id })
-        .populate("requests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("friends", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("sentRequests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ]);
       const user = await User.findById({ _id: id });
       const save = await user.updateOne({
         $push: {
@@ -55,24 +37,6 @@ exports.acceptFriend = async (req, res) => {
     if (id) {
       const user = await User.findById({ _id: id });
       const currentUser = await User.findById({ _id: req.user._id })
-        .populate("requests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("friends", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("sentRequests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ]);
       const save = await currentUser.updateOne({
         $push: {
           friends: id,
@@ -111,24 +75,6 @@ exports.cancelRequest = async (req, res) => {
     if (id) {
       const user = await User.findById({ _id: id });
       const currentUser = await User.findById({ _id: req.user._id })
-        .populate("requests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("friends", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("sentRequests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ]);
 
       const save = await currentUser.updateOne({
         $pull: {
