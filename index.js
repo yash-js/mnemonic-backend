@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-app.options("*", cors({ origin: '*', optionsSuccessStatus: 200 }));
+app.options("*", cors({ origin: "*", optionsSuccessStatus: 200 }));
 app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
 app.use(cookieParser());
 app.use(express.json({ limit: "40mb" }));
@@ -19,7 +19,7 @@ require("./db/conn");
 app.use(require("./routes/auth"));
 app.use("/user", require("./routes/user"));
 app.use("/friend", require("./routes/friend"));
-
+app.use("/notes", require("./routes/notes"));
 const port = process.env.PORT;
 
 app.listen(port, () => console.log(`Server running on port ${port} 🔥`));
