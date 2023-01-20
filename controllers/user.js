@@ -1,4 +1,9 @@
 const User = require("../models/User");
+const emailRegex = new RegExp(
+  /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
+);
+
+const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,10}$/);
 
 exports.getUser = async (req, res) => {
   try {
@@ -64,61 +69,52 @@ exports.searchUser = async (req, res) => {
 };
 
 exports.editUser = async (req, res) => {
-  try {
-    let editData = {};
-    const id = req.user._id;
+  if (req.body)
+    try {
+      const id = req.user._id;
 
-    const { firstName, lastName, email, username } = req.body;
-    // if (!data)
-    //   return res.status(400).json({
-    //     error: "Something Went Wrong! Please Try Again",
-    //   });
+      // Username Validations
 
-    if (
-      req.user.firstName === firstName &&
-      req.user.lastName === lastName &&
-      req.user.email === email &&
-      req.user.username === username
-    ) {
-      return res.status(400).json({
-        error: "Nothing to Update!",
-      });
-    } else if (req.user.firstName !== firstName) {
-      editData.firstName = firstName;
-    } else if (req.user.lastName !== lastName) {
-      editData.lastName = lastName;
-    } else if (req.user.email !== email) {
-      editData.email = email;
-    } else if (req.user.username !== username) {
-      editData.username = username;
-    } else if (req.user.profilePic !== profilePic) {
-      editData.profilePic = profilePic;
-    }
-     if (editData && editData?.username) {
-      const existingUsername = await User.findOne({
-        username: editData.username,
-      });
-      if (existingUsername)
-        return res.status(400).json({
-          error: "Username already taken, Please choose different username!",
+      if (req.body && req.body.username) {
+        const existingUsername = await User.findOne({
+          username: req.body.username,
         });
-    }
-    if (editData && editData?.email) {
-      const existingEmail = await User.findOne({ email: editData?.email });
-      if (existingEmail)
-        return res.status(400).json({
-          error: "Username already taken, Please choose different username!",
-        });
-    }
-    await User.findByIdAndUpdate(id, editData);
+        if (!usernameRegex.test(req.body.username))
+          return res.status(400).json({
+            field: "username",
+            error:
+              "Invalid Username, Length should Be greater than 4 and lesser than or equal to 10 and it can contain Alphabets(a-z) , Numbers(0-9), Period(.) and Underscore(_) only.",
+          });
+        if (existingUsername)
+          return res.status(400).json({
+            field: "username",
+            error: "Username already taken, Please choose different username!",
+          });
+      }
 
-    return res.json({
-      message: "Profile Updated!",
-    });
-  } catch (error) {
-    res.json({
-      error: "Something Went Wrong!",
-      errMsg: error.message,
-    });
-  }
+      if (req.body && req.body.email) {
+        const existingEmail = await User.findOne({ email: req.body.email });
+        if (existingEmail)
+          return res.status(400).json({
+            field: "email",
+            error: "Email Id already taken, Please choose different Email Id!",
+          });
+        if (!emailRegex.test(req.body.email)) {
+          return res.status(400).json({
+            field: "email",
+            error: "Enter Valid Email!",
+          });
+        }
+      }
+      await User.findByIdAndUpdate(id, req.body);
+
+      return res.json({
+        message: "Profile Updated!",
+      });
+    } catch (error) {
+      res.json({
+        error: "Something Went Wrong!",
+        errMsg: error.message,
+      });
+    }
 };

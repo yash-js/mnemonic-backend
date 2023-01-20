@@ -7,7 +7,7 @@ const emailRegex = new RegExp(
   /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
 );
 
-const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{3,29}$/);
+const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,10}$/);
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -97,7 +97,7 @@ exports.signup = async (req, res) => {
       return res.status(400).json({
         field: "username",
         error:
-          "Invalid Username, Length should Be greater than 4 and it can contain Alphabets(a-z) , Numbers(0-9), Period(.) and Underscore(_) only.",
+          "Invalid Username, Length should Be greater than 4 and lesser than or equal to 10 and it can contain Alphabets(a-z) , Numbers(0-9), Period(.) and Underscore(_) only.",
       });
 
     const existingUsername = await User.findOne({ username });
