@@ -14,15 +14,15 @@ const notesSchema = new Schema(
       type: String,
     },
     notedOn: {
-      type: String,
+      type: Date,
+      default: new Date(),
     },
-    //   photo: {
-    //     type: String,
-    //   },
-    tags: {
-      type: Array,
-      default: [""],
-    },
+    mentioned: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
