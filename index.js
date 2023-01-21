@@ -6,9 +6,6 @@ const cors = require("cors");
 
 app.options("*", cors({ origin: "*", optionsSuccessStatus: 200 }));
 app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
-app.use(res.header('Access-Control-Allow-Origin', 'example.com'))
-app.use(res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE'))
-app.use(res.header('Access-Control-Allow-Headers', 'Content-Type'))
 app.use(cookieParser());
 app.use(express.json({ limit: "40mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
