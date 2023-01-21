@@ -4,8 +4,8 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-app.options("*", cors({ origin: "*", optionsSuccessStatus: 200 }));
-app.use(cors({ origin: ["http://localhost:*","*"], optionsSuccessStatus: 200 }));
+app.options("*", cors({ origin: ["http://localhost:3000","*"], optionsSuccessStatus: 200 }));
+app.use(cors({ origin: ["http://localhost:3000","*"], optionsSuccessStatus: 200 }));
 app.use(cookieParser());
 app.use(express.json({ limit: "40mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
