@@ -6,7 +6,6 @@ const cors = require("cors");
 
 const options = {
   origin: "*",
-  optionsSuccessStatus: 200,
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
 app.use(cors(options));
