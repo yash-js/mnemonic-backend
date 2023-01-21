@@ -171,7 +171,6 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    let token;
     const { password, username } = req.body;
 
     if (!username)
@@ -213,6 +212,7 @@ exports.signin = async (req, res) => {
     return res.json({
       message: "Success!",
       user: {
+        id: existingUser.firstName,
         firstName: existingUser.firstName,
         lastName: existingUser.lastName,
         profilePic: existingUser.profilePic,

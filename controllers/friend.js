@@ -4,7 +4,7 @@ exports.addFriend = async (req, res) => {
   try {
     const { id } = req.params;
     if (id) {
-      const currentUser = await User.findById({ _id: req.user._id })
+      const currentUser = await User.findById({ _id: req.user._id });
       const user = await User.findById({ _id: id });
       const save = await user.updateOne({
         $push: {
@@ -36,7 +36,7 @@ exports.acceptFriend = async (req, res) => {
     const { id } = req.params;
     if (id) {
       const user = await User.findById({ _id: id });
-      const currentUser = await User.findById({ _id: req.user._id })
+      const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
         $push: {
           friends: id,
@@ -74,16 +74,16 @@ exports.cancelRequest = async (req, res) => {
     const { id } = req.params; //friend's id in request body
     if (id) {
       const user = await User.findById({ _id: id });
-      const currentUser = await User.findById({ _id: req.user._id })
+      const currentUser = await User.findById({ _id: req.user._id });
 
       const save = await currentUser.updateOne({
         $pull: {
           requests: id,
         },
       });
-       await user.updateOne({
+      await user.updateOne({
         $pull: {
-          sentRequests: req.user._id ,
+          sentRequests: req.user._id,
         },
       });
       res.json({
@@ -105,25 +105,7 @@ exports.removeFriend = async (req, res) => {
     const { id } = req.params;
     if (id) {
       const user = await User.findById({ _id: id });
-      const currentUser = await User.findById({ _id: req.user._id })
-        .populate("requests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("friends", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ])
-        .populate("sentRequests", [
-          "firstName",
-          "lastName",
-          "username",
-          "profilePic",
-        ]);
+      const currentUser = await User.findById({ _id: req.user._id });
       const save = await currentUser.updateOne({
         $pull: {
           friends: id,
@@ -132,7 +114,7 @@ exports.removeFriend = async (req, res) => {
 
       await user.updateOne({
         $pull: {
-          friends: req.user._id ,
+          friends: req.user._id,
         },
       });
       res.json({
