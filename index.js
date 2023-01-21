@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const options = {
-  origin: "http://localhost:3000",
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
 app.use(cors(options));
