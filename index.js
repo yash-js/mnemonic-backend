@@ -3,7 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-
+res.set('Access-Control-Allow-Origin', '*');
 app.options("*", cors({ origin: "*", optionsSuccessStatus: 200 }));
 app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
 app.use(cookieParser());
