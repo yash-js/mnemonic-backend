@@ -45,6 +45,9 @@ var transporter = nodemailer.createTransport({
 //   });
 
 exports.signup = async (req, res) => {
+  req.token = undefined;
+  req.user = undefined;
+  req.userId = undefined;
   try {
     const {
       firstName,
@@ -172,7 +175,9 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
   try {
     const { password, username } = req.body;
-
+    req.token = undefined;
+    req.user = undefined;
+    req.userId = undefined;
     if (!username)
       return res.status(400).json({
         field: "username",
@@ -221,6 +226,7 @@ exports.signin = async (req, res) => {
         friends: existingUser.friends,
         requests: existingUser.requests,
         token: existingUser.token,
+        sentRequests: existingUser.sentRequests,
       },
     });
   } catch (error) {
@@ -232,7 +238,7 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
   try {
-    const getUser = await User.findOne({
+    await User.findOne({
       _id: req.user._id,
       token: req.token,
     });

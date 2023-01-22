@@ -30,6 +30,7 @@ exports.getUser = async (req, res) => {
         friends: findUser.friends,
         requests: findUser.requests,
         token: findUser.token,
+        sentRequests: findUser.sentRequests,
       },
     });
   } catch (error) {
@@ -117,4 +118,71 @@ exports.editUser = async (req, res) => {
         errMsg: error.message,
       });
     }
+};
+
+exports.getNotifications = async (req, res) => {
+  try {
+    const notifications = await User.findById(req.user._id)
+      .populate("notification.from", [
+        "_id",
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
+      ])
+      .populate("latestNotification.from", [
+        "_id",
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
+      ]);
+      console.log(notifications);
+    return res.json({
+      notification: notifications.notification,
+      latest: notifications.latestNotification,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: "Something Went Wrong!",
+    });
+  }
+};
+
+exports.readNotifications = async (req, res) => {
+  try {
+    const notifications = await User.updateOne(
+      {
+        _id: req.user._id,
+      },
+      {
+        $unset: {
+          latestNotification: [],
+        },
+      }
+    );
+    res.json(notifications);
+  } catch (error) {
+    res.status(400).json({
+      error: "Something Went Wrong!",
+    });
+  }
+};
+
+exports.removeNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const currentUser = await User.findById(req.user._id);
+    const s = await currentUser.updateOne({
+      $pull: {
+        notification: id,
+      },
+    });
+    res.json({ message: "Removed" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      error: "Something Went Wrong!",
+    });
+  }
 };

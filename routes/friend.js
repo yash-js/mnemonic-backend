@@ -8,6 +8,7 @@ const {
   getRequests,
   getSuggestions,
   getSentRequests,
+  getAllFriendsData,
 } = require("../controllers/friend");
 const authenticate = require("../middlewares/auth");
 const router = express.Router();
@@ -26,6 +27,8 @@ router.delete("/remove/:id", authenticate, removeFriend);
 
 router.get("/suggestions", authenticate, getSuggestions);
 
-router.get('/sent',authenticate, getSentRequests)
+router.get("/sent", authenticate, getSentRequests);
+
+router.get("/all", authenticate, getAllFriendsData);
 
 module.exports = router;
