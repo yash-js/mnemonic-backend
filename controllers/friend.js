@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const { transporter } = require("./auth");
 
 exports.addFriend = async (req, res) => {
   try {
@@ -26,7 +27,28 @@ exports.addFriend = async (req, res) => {
           sentRequests: id,
         },
       });
-
+      const mail = {
+        to: email,
+        from: "yash@no-reply.com",
+        subject: "Account Successfully Registered",
+        html: `<h1>Welcome, ${req.user.firstName}. </h1>
+  
+              <h2> ${user.firstName} has sent you a friend request!</h2>
+  
+              <h4>
+              Regards, 
+              Mnemonic Notes.
+              </h4>
+               
+              `,
+      };
+      transporter.sendMail(mail, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
       res.json({
         save,
         currentUser,
@@ -72,7 +94,28 @@ exports.acceptFriend = async (req, res) => {
           sentRequests: id,
         },
       });
-
+      const mail = {
+        to: email,
+        from: "yash@no-reply.com",
+        subject: "Account Successfully Registered",
+        html: `<h1>Hey, ${req.user.firstName}. </h1>
+  
+              <h2> ${user.firstName} has accepted your friend request!</h2>
+  
+              <h4>
+              Regards, 
+              Mnemonic Notes.
+              </h4>
+               
+              `,
+      };
+      transporter.sendMail(mail, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
       res.json({
         message: "Friend Request Accepted!",
       });

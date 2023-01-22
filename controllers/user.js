@@ -17,6 +17,16 @@ exports.getUser = async (req, res) => {
         "lastName",
         "username",
         "profilePic",
+      ]).populate("latestNotification.from", [
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
+      ]).populate("notification.from", [
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
       ]);
 
     return res.json({
@@ -31,11 +41,14 @@ exports.getUser = async (req, res) => {
         requests: findUser.requests,
         token: findUser.token,
         sentRequests: findUser.sentRequests,
+        latest: findUser.latestNotification,
+        notification: findUser.notification,
       },
     });
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({
-      error: "Something Went Wrong!",
+      error: error.message,
     });
   }
 };
@@ -137,7 +150,7 @@ exports.getNotifications = async (req, res) => {
         "username",
         "profilePic",
       ]);
-      console.log(notifications);
+    console.log(notifications);
     return res.json({
       notification: notifications.notification,
       latest: notifications.latestNotification,
