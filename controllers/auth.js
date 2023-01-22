@@ -9,7 +9,7 @@ const emailRegex = new RegExp(
 
 const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,10}$/);
 
-var transporter = nodemailer.createTransport({
+exports.transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL,
@@ -175,9 +175,6 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
   try {
     const { password, username } = req.body;
-    req.token = undefined;
-    req.user = undefined;
-    req.userId = undefined;
     if (!username)
       return res.status(400).json({
         field: "username",
@@ -202,17 +199,33 @@ exports.signin = async (req, res) => {
         "lastName",
         "username",
         "profilePic",
+      ])
+      .populate("latestNotification.from", [
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
+      ])
+      .populate("notification.from", [
+        "firstName",
+        "lastName",
+        "username",
+        "profilePic",
       ]);
 
     if (!existingUser)
-      return res.status(400).json({ error: "Inavlid Credentials!" });
+      return res.status(400).json({ error: "Invalid Credentials!" });
 
     const checkPassword = await bcrypt.compare(password, existingUser.password);
 
     if (!checkPassword)
-      return res.status(400).json({ error: "Inavlid Credentials!" });
+      return res.status(400).json({ error: "Iavalid Credentials!" });
 
     token = await existingUser.generateToken();
+
+    await res.cookie("authToken", token, {
+      httpOnly: true,
+    });
 
     return res.json({
       message: "Success!",
@@ -227,6 +240,8 @@ exports.signin = async (req, res) => {
         requests: existingUser.requests,
         token: existingUser.token,
         sentRequests: existingUser.sentRequests,
+        latest: existingUser.latestNotification,
+        notification: existingUser.notification,
       },
     });
   } catch (error) {

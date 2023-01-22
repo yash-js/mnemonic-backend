@@ -5,8 +5,14 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const options = {
-  origin: "*",
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:*",
+    process.env.CLIENT_URL,
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 };
 app.use(cors(options));
 app.options("*", cors(options));

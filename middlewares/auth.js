@@ -3,9 +3,12 @@ const User = require("../models/User");
 
 const authenticate = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.cookies.authToken;
     const verify = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ _id: verify._id });
+    const user = await User.findOne({
+      _id: verify._id,
+      token: req.cookies.authToken,
+    });
     if (!user) return res.send("USER NOT FOUND");
 
     req.token = token;
