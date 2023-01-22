@@ -49,6 +49,28 @@ const userSchema = new Schema(
         ref: "User",
       },
     ],
+    notification: [
+      {
+        from: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        message: {
+          type: String,
+        },
+      },
+    ],
+    latestNotification: [
+      {
+        from: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        message: {
+          type: String,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
