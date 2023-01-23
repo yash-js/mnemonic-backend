@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/signup', signup)
 router.post('/signin', signin)
-router.get('/signout', authenticate, signout)
+router.get('/signout', signout)
 
 // router.post('/edit', authenticate, editUser)
 // router.post('/post', authenticate, post)
