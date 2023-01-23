@@ -8,7 +8,6 @@ const options = {
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
-    "http://localhost:*",
     process.env.CLIENT_URL,
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
