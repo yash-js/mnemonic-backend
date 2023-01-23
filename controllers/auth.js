@@ -174,6 +174,9 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
+    req.token = undefined;
+    req.user = undefined;
+    req.userId = undefined;
     const { password, username } = req.body;
     if (!username)
       return res.status(400).json({
