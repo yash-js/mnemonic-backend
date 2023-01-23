@@ -83,10 +83,10 @@ exports.deleteNote = async (req, res) => {
 
 exports.getNotes = async (req, res) => {
   try {
-    await Notes.find({ author: req.user?._id });
+    const notes = await Notes.find({ author: req.user?._id });
 
     return res.json({
-      message: "Note Updated!",
+      notes,
     });
   } catch (error) {
     res.json({
