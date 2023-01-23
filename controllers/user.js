@@ -150,7 +150,6 @@ exports.getNotifications = async (req, res) => {
         "username",
         "profilePic",
       ]);
-    console.log(notifications);
     return res.json({
       notification: notifications.notification,
       latest: notifications.latestNotification,
