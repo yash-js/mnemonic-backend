@@ -9,7 +9,7 @@ const authenticate = async (req, res, next) => {
       _id: verify._id,
       token: req.cookies.authToken,
     });
-    if (!user) return res.send("USER NOT FOUND");
+    if (!user) return res.status(401).send("USER NOT FOUND");
 
     req.token = token;
     req.user = user;
