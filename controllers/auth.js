@@ -228,6 +228,7 @@ exports.signin = async (req, res) => {
 
     await res.cookie("authToken", token, {
       httpOnly: true,
+      expire: 86400000 + Date.now(),
     });
 
     return res.json({
@@ -256,10 +257,11 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
   try {
-    await User.findOne({
-      _id: req.user._id,
-      token: req.token,
-    });
+     res.clearCookie('foo');
+    // await User.findOne({
+    //   _id: req.user._id,
+    //   token: req.token,
+    // });
     req.token = undefined;
     req.user = undefined;
     req.userId = undefined;
