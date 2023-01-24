@@ -1,5 +1,7 @@
 const Notes = require("../models/Notes");
-
+const User = require("../models/User");
+var mongodb = require("mongodb");
+var ObjectID = mongodb.ObjectID;
 exports.createNote = async (req, res) => {
   try {
     const { noteTitle, noteContent, notedOn } = req.body;
@@ -17,7 +19,7 @@ exports.createNote = async (req, res) => {
     }
 
     const saveNote = new Notes(noteData);
-
+    const currentUser = await User.findById(req.user._id);
     await saveNote.save();
     await saveNote.populate("author", [
       "firstName",
@@ -25,6 +27,12 @@ exports.createNote = async (req, res) => {
       "username",
       "profilePic",
     ]);
+    await currentUser.update({
+      $push: {
+        notes: saveNote._id,
+      },
+    });
+
     res.json({
       saveNote,
       message: "Note Stored",
@@ -83,10 +91,14 @@ exports.deleteNote = async (req, res) => {
 
 exports.getNotes = async (req, res) => {
   try {
-    const notes = await Notes.find({ author: req.user?._id });
+    var query = {
+      author: req.user._id,
+    };
+
+    var cursor = await Notes.find(query);
 
     return res.json({
-      notes,
+      cursor,
     });
   } catch (error) {
     res.json({
@@ -95,3 +107,5 @@ exports.getNotes = async (req, res) => {
     });
   }
 };
+
+// Analyse this code
