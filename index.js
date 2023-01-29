@@ -40,7 +40,14 @@ app.use(
 );
 
 require("./db/conn");
-
+app.use((req, res, next) => {
+  if (!req.session.user && req.cookies.user) {
+    res.clearCookie("user");
+    next();
+  } else {
+    next();
+  }
+});
 app.use(require("./routes/auth"));
 app.use("/user", require("./routes/user"));
 app.use("/friend", require("./routes/friend"));
