@@ -91,13 +91,12 @@ exports.deleteNote = async (req, res) => {
 
 exports.getNotes = async (req, res) => {
   try {
-    var user = await User.findById(req.user._id)
-      .populate("notes", ["noteTitle", "noteContent", "notedOn", "noteType"])
-      .populate("notes.mentions", ["username", "profilePic"])
-      .populate("notes.author", ["username", "profilePic"]);
+    var notes = await Notes.find({author: req.user._id})
+      .populate("mentions", ["username", "profilePic"])
+      .populate("author", ["username", "profilePic"]);
 
     return res.json({
-      notes: user.notes,
+      notes: notes,
     });
   } catch (error) {
     res.json({
