@@ -1,21 +1,17 @@
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const authenticate = async (req, res, next) => {
   try {
-    const token = req.cookies.authToken;
-    const verify = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({
-      _id: verify._id,
-      token: req.cookies.authToken,
-    });
-    if (!user) return res.status(401).send("USER NOT FOUND");
-
-    req.token = token;
-    req.user = user;
-    req.userId = req.user._id;
-
-    next();
+    if (req.session.user && req.cookies.user) {
+      const user = await User.findOne({
+        _id: req.session.user,
+      });
+      req.user = user;
+      req.userId = req.user._id;
+      next();
+    } else {
+      return res.status(401).json({ error: "USER NOT FOUND" });
+    }
   } catch (err) {
     console.log(err);
     return res.status(401).json({ error: "USER NOT FOUND" });

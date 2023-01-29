@@ -16,33 +16,6 @@ exports.transporter = nodemailer.createTransport({
     pass: process.env.PASSWORD,
   },
 });
-// const mail = {
-//     to: admin.email,
-//     from: "yash@no-reply.com",
-//     subject: "Account Successfully Registered",
-//     html: `<h2>Welcome, ${name}. </h2>
-//     <h4>You're Now an Admin of Student Management System</h4>
-//       <p>Your Login Credentials Are : </p>
-//       <em>Email Id: ${email}</em>
-//       <em>Password: ${password}</em>
-
-//     <h4>
-//     <a href="https://project-sms.netlify.app/admin">Click Here To Login!</a>
-//     </h4>
-
-//       <footer>
-//       <p>-Admin Dept.</p>
-//       </footer>
-
-//     `,
-//   };
-//   transporter.sendMail(mail, (error, info) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       console.log("Email sent: " + info.response);
-//     }
-//   });
 
 exports.signup = async (req, res) => {
   req.token = undefined;
@@ -174,9 +147,9 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    req.token = undefined;
-    req.user = undefined;
-    req.userId = undefined;
+    if (req.cookies.user && !req.session.user) {
+      res.clearCookie("user");
+    } 
     const { password, username } = req.body;
     if (!username)
       return res.status(400).json({
@@ -223,13 +196,7 @@ exports.signin = async (req, res) => {
 
     if (!checkPassword)
       return res.status(400).json({ error: "Iavalid Credentials!" });
-
-    token = await existingUser.generateToken();
-
-    await res.cookie("authToken", token, {
-      httpOnly: true,
-      expire: 86400000 + Date.now(),
-    });
+    req.session.user = existingUser._id;
 
     return res.json({
       message: "Success!",
@@ -242,7 +209,6 @@ exports.signin = async (req, res) => {
         email: existingUser.email,
         friends: existingUser.friends,
         requests: existingUser.requests,
-        token: existingUser.token,
         sentRequests: existingUser.sentRequests,
         latest: existingUser.latestNotification,
         notification: existingUser.notification,
@@ -257,76 +223,12 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
   try {
-     res.clearCookie('foo');
-    // await User.findOne({
-    //   _id: req.user._id,
-    //   token: req.token,
-    // });
+    res.clearCookie("user");
+    req.session.user = undefined
     req.token = undefined;
     req.user = undefined;
     req.userId = undefined;
     return res.send("Success");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-exports.post = async (req, res) => {
-  try {
-    const { postTitle, postContent, postedOn, photo, tags } = req.body;
-
-    if (!postTitle || !postContent || !postedOn || !photo || !tags)
-      return res.status(400).json({
-        error: "All Fields Are Required!",
-      });
-
-    const findPost = await Post.findOne({
-      postTitle,
-    });
-
-    if (findPost)
-      return res.status(400).json({
-        error: "Post With The Same Title Already Exists!",
-      });
-
-    if (!photo)
-      return res.status(400).json({
-        error: "Something Went Wrong with Photo!",
-      });
-    const uploadedRes = await cloudinary.uploader.upload(photo, {
-      upload_preset: "mymernblogapp",
-    });
-
-    let photoUrl = uploadedRes.url;
-    console.log(photoUrl);
-
-    const savePost = new Post({
-      postedBy: req.user.name,
-      postTitle,
-      postContent,
-      postedOn,
-      photo: photoUrl,
-      tags,
-    });
-
-    await savePost.save();
-
-    return res.json({
-      message: "Posted!",
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json({
-      error: error.message,
-    });
-  }
-};
-
-exports.posts = async (req, res) => {
-  try {
-    const posts = await Post.find();
-
-    return res.json(posts);
   } catch (error) {
     console.log(error);
   }

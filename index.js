@@ -3,7 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-
+const session = require("express-session");
 const options = {
   origin: [
     "http://localhost:3000",
@@ -13,6 +13,12 @@ const options = {
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
+
+dotenv.config({
+  path: "./config.env",
+});
+const secret = process.env.JWT_SECRET;
+
 app.use(cors(options));
 app.options("*", cors(options));
 
@@ -20,9 +26,18 @@ app.use(cookieParser());
 app.use(express.json({ limit: "40mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-dotenv.config({
-  path: "./config.env",
-});
+app.use(
+  session({
+    key: "user",
+    secret: secret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 86400000,
+      httpOnly: true,
+    },
+  })
+);
 
 require("./db/conn");
 
