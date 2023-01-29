@@ -1,15 +1,15 @@
 const Notes = require("../models/Notes");
 const User = require("../models/User");
-var mongodb = require("mongodb");
-var ObjectID = mongodb.ObjectID;
+
 exports.createNote = async (req, res) => {
   try {
-    const { noteTitle, noteContent, notedOn } = req.body;
+    const { noteTitle, noteContent, notedOn, mentions } = req.body;
     const noteData = {
       author: req.user._id,
       noteTitle, //title
       noteContent, //content
       notedOn, //date
+      mentions,
     };
 
     if (!noteTitle || !noteContent || !notedOn) {
@@ -21,20 +21,20 @@ exports.createNote = async (req, res) => {
     const saveNote = new Notes(noteData);
     const currentUser = await User.findById(req.user._id);
     await saveNote.save();
-    await saveNote.populate("author", [
-      "firstName",
-      "lastName",
-      "username",
-      "profilePic",
-    ]);
-    await currentUser.update({
+    const savedNote = await Notes.findById(saveNote._id)
+      .populate("author", ["username", "profilePic"])
+      .populate("mentions", ["username", "profilePic"]);
+
+    await currentUser.updateOne({
       $push: {
-        notes: saveNote._id,
+        notes: savedNote._id,
       },
     });
 
+    console.log(currentUser);
+
     res.json({
-      saveNote,
+      savedNote,
       message: "Note Stored",
     });
   } catch (error) {
@@ -91,14 +91,13 @@ exports.deleteNote = async (req, res) => {
 
 exports.getNotes = async (req, res) => {
   try {
-    var query = {
-      author: req.user._id,
-    };
-
-    var cursor = await Notes.find(query);
+    var user = await User.findById(req.user._id)
+      .populate("notes", ["noteTitle", "noteContent", "notedOn", "noteType"])
+      .populate("notes.mentions", ["username", "profilePic"])
+      .populate("notes.author", ["username", "profilePic"]);
 
     return res.json({
-      cursor,
+      notes: user.notes,
     });
   } catch (error) {
     res.json({

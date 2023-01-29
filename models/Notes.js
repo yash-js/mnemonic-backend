@@ -17,12 +17,16 @@ const notesSchema = new Schema(
       type: Date,
       default: new Date(),
     },
-    mentioned: [
+    mentions: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
       },
     ],
+    noteType: {
+      type: String,
+      default: "normal",
+    },
   },
   { timestamps: true }
 );
