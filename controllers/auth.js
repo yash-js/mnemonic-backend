@@ -149,7 +149,7 @@ exports.signin = async (req, res) => {
   try {
     if (req.cookies.user && !req.session.user) {
       res.clearCookie("user");
-    } 
+    }
     const { password, username } = req.body;
     if (!username)
       return res.status(400).json({
@@ -187,8 +187,31 @@ exports.signin = async (req, res) => {
         "lastName",
         "username",
         "profilePic",
-      ]);
-
+      ])
+      .populate("notes", [
+        "noteTitle",
+        "noteContent",
+        "notedOn",
+        "noteType",
+        "mentions",
+        "author",
+      ])
+      .populate({
+        path: "notes",
+        populate: {
+          path: "author",
+          model: "User",
+          select: { username: 1, profilePic: 1 },
+        },
+      })
+      .populate({
+        path: "notes",
+        populate: {
+          path: "mentions",
+          model: "User",
+          select: { username: 1, profilePic: 1 },
+        },
+      })
     if (!existingUser)
       return res.status(400).json({ error: "Invalid Credentials!" });
 
@@ -201,7 +224,7 @@ exports.signin = async (req, res) => {
     return res.json({
       message: "Success!",
       user: {
-        id: existingUser.firstName,
+        id: existingUser._id,
         firstName: existingUser.firstName,
         lastName: existingUser.lastName,
         profilePic: existingUser.profilePic,
@@ -212,6 +235,7 @@ exports.signin = async (req, res) => {
         sentRequests: existingUser.sentRequests,
         latest: existingUser.latestNotification,
         notification: existingUser.notification,
+        notes: existingUser.notes,
       },
     });
   } catch (error) {
@@ -224,7 +248,7 @@ exports.signin = async (req, res) => {
 exports.signout = async (req, res) => {
   try {
     res.clearCookie("user");
-    req.session.user = undefined
+    req.session.user = undefined;
     req.token = undefined;
     req.user = undefined;
     req.userId = undefined;

@@ -10,6 +10,7 @@ exports.createNote = async (req, res) => {
       noteContent, //content
       notedOn, //date
       mentions,
+      noteType,
     };
 
     if (!noteTitle || !noteContent || !notedOn) {
@@ -30,8 +31,32 @@ exports.createNote = async (req, res) => {
         notes: savedNote._id,
       },
     });
-
-    console.log(currentUser);
+    if (mentions && mentions.length > 0) {
+      mentions.map(async (mention) => {
+        const user = await User.findById(mention._id);
+        await user.updateOne({
+          $push: {
+            notes: {
+              author: req.user._id,
+              noteTitle,
+              noteContent,
+              notedOn,
+              noteType,
+            },
+            latestNotification: {
+              from: req.user._id,
+              message: `${req.user.username} mentioned you in a note!`,
+              event: "mentioned",
+            },
+            notification: {
+              from: req.user._id,
+              message: `${req.user.username} mentioned you in a note!`,
+              event: "mentioned",
+            },
+          },
+        });
+      });
+    }
 
     res.json({
       savedNote,
@@ -91,7 +116,7 @@ exports.deleteNote = async (req, res) => {
 
 exports.getNotes = async (req, res) => {
   try {
-    var notes = await Notes.find({author: req.user._id})
+    var notes = await Notes.find({ author: req.user._id })
       .populate("mentions", ["username", "profilePic"])
       .populate("author", ["username", "profilePic"]);
 
@@ -105,5 +130,3 @@ exports.getNotes = async (req, res) => {
     });
   }
 };
-
-// Analyse this code

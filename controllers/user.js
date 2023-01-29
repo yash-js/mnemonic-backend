@@ -17,17 +17,43 @@ exports.getUser = async (req, res) => {
         "lastName",
         "username",
         "profilePic",
-      ]).populate("latestNotification.from", [
+      ])
+      .populate("latestNotification.from", [
         "firstName",
         "lastName",
         "username",
         "profilePic",
-      ]).populate("notification.from", [
+      ])
+      .populate("notification.from", [
         "firstName",
         "lastName",
         "username",
         "profilePic",
-      ]);
+      ])
+      .populate("notes", [
+        "noteTitle",
+        "noteContent",
+        "notedOn",
+        "noteType",
+        "mentions",
+        "author",
+      ])
+      .populate({
+        path: "notes",
+        populate: {
+          path: "author",
+          model: "User",
+          select: { username: 1, profilePic: 1 },
+        },
+      })
+      .populate({
+        path: "notes",
+        populate: {
+          path: "mentions",
+          model: "User",
+          select: { username: 1, profilePic: 1 },
+        },
+      });
 
     return res.json({
       user: {
@@ -43,6 +69,7 @@ exports.getUser = async (req, res) => {
         sentRequests: findUser.sentRequests,
         latest: findUser.latestNotification,
         notification: findUser.notification,
+        notes: findUser.notes,
       },
     });
   } catch (error) {
