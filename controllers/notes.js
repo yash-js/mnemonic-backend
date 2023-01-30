@@ -3,14 +3,14 @@ const User = require("../models/User");
 
 exports.createNote = async (req, res) => {
   try {
-    const { noteTitle, noteContent, notedOn, mentions,noteType } = req.body;
+    const { noteTitle, noteContent, notedOn, mentions, noteType } = req.body;
     const noteData = {
       author: req.user._id,
       noteTitle, //title
       noteContent, //content
       notedOn, //date
-      mentions,
       noteType,
+      mentions,
     };
 
     if (!noteTitle || !noteContent || !notedOn) {
@@ -20,8 +20,8 @@ exports.createNote = async (req, res) => {
     }
 
     const saveNote = new Notes(noteData);
-    const currentUser = await User.findById(req.user._id);
     await saveNote.save();
+    const currentUser = await User.findById(req.user._id);
     const savedNote = await Notes.findById(saveNote._id)
       .populate("author", ["username", "profilePic"])
       .populate("mentions", ["username", "profilePic"]);
@@ -31,34 +31,97 @@ exports.createNote = async (req, res) => {
         notes: savedNote._id,
       },
     });
-    if (mentions && mentions.length > 0) {
-      mentions.map(async (mention) => {
-        const user = await User.findById(mention._id);
-        await user.updateOne({
-          $push: {
-            notes: {
-              author: req.user._id,
-              noteTitle,
-              noteContent,
-              notedOn,
-              noteType,
-            },
-            latestNotification: {
-              from: req.user._id,
-              message: `${req.user.username} mentioned you in a note!`,
-              event: "mentioned",
-            },
-            notification: {
-              from: req.user._id,
-              message: `${req.user.username} mentioned you in a note!`,
-              event: "mentioned",
-            },
-          },
-        });
-      });
-    }
+
+    const mentioned = await User.findById({ _id: mentions });
+    // console.log(mentioned);
+    // mentioned.notes.push({
+    //   author: req.user._id,
+    //   noteTitle, //title
+    //   noteContent, //content
+    //   notedOn, //date
+    //   noteType,
+    // });
+    // mentioned.latestNotification.push({
+    //   from: req.user._id,
+    //   message: `@${req.user.username} mentioned you in a note!`,
+    //   event: "mentioned",
+    // });
+    // mentioned.notification.push({
+    //   from: req.user._id,
+    //   message: `@${req.user.username} mentioned you in a note!`,
+    //   event: "mentioned",
+    // });
+    // await mentioned.updateOne({
+    //   $push: {
+    //     notes: {
+    //       author: req.user._id,
+    //       noteTitle, //title
+    //       noteContent, //content
+    //       notedOn, //date
+    //       noteType,
+    //     },
+    //     latestNotification: {
+    //       from: req.user._id,
+    //       message: `@${req.user.username} mentioned you in a note!`,
+    //       event: "mentioned",
+    //     },
+    //     notification: {
+    //       from: req.user._id,
+    //       message: `@${req.user.username} mentioned you in a note!`,
+    //       event: "mentioned",
+    //     },
+    //   },
+    // });
+
+    // if (mentions && mentions.length > 0) {
+    // const user = await User.updateMany(
+    //   { _id: { $in: mentions } },
+    //   {
+    //     $push: {
+    //       notes: {
+    //         author: req.user._id,
+    //         noteTitle,
+    //         noteContent,
+    //         notedOn,
+    //         noteType,
+    //       },
+    //       latestNotification: {
+    //         from: req.user._id,
+    //         message: `${req.user.username} mentioned you in a note!`,
+    //         event: "mentioned",
+    //       },
+    //       notification: {
+    //         from: req.user._id,
+    //         message: `${req.user.username} mentioned you in a note!`,
+    //         event: "mentioned",
+    //       },
+    //     },
+    //   },
+    // );
+    // await mentioned.updateOne({
+    //   $push: {
+    //     notes: {
+    //       author: req.user._id,
+    //       noteTitle,
+    //       noteContent,
+    //       notedOn,
+    //       noteType,
+    //     },
+    //     latestNotification: {
+    //       from: req.user._id,
+    //       message: `${req.user.username} mentioned you in a note!`,
+    //       event: "mentioned",
+    //     },
+    //     notification: {
+    //       from: req.user._id,
+    //       message: `${req.user.username} mentioned you in a note!`,
+    //       event: "mentioned",
+    //     },
+    //   },
+    // });
 
     res.json({
+      // user,
       savedNote,
       message: "Note Stored",
     });

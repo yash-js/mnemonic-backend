@@ -28,12 +28,12 @@ exports.addFriend = async (req, res) => {
         },
       });
       const mail = {
-        to: email,
+        to: user.email,
         from: "yash@no-reply.com",
         subject: "Account Successfully Registered",
-        html: `<h1>Welcome, ${req.user.firstName}. </h1>
+        html: `<h1>Hi, ${user.firstName}. </h1>
   
-              <h2> ${user.firstName} has sent you a friend request!</h2>
+              <h2> ${req.user.firstName} has sent you a friend request!</h2>
   
               <h4>
               Regards, 
@@ -95,7 +95,7 @@ exports.acceptFriend = async (req, res) => {
         },
       });
       const mail = {
-        to: email,
+        to: req.user.email,
         from: "yash@no-reply.com",
         subject: "Account Successfully Registered",
         html: `<h1>Hey, ${req.user.firstName}. </h1>
