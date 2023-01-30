@@ -10,7 +10,7 @@ exports.createNote = async (req, res) => {
       noteContent, //content
       notedOn, //date
       noteType,
-      mentions,
+      // mentions,
     };
 
     if (!noteTitle || !noteContent || !notedOn) {
