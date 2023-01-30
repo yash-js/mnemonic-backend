@@ -127,7 +127,7 @@ exports.signup = async (req, res) => {
              
             `,
     };
-    transporter.sendMail(mail, (error, info) => {
+    this.transporter.sendMail(mail, (error, info) => {
       if (error) {
         console.log(error);
       } else {
