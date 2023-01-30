@@ -32,7 +32,7 @@ exports.createNote = async (req, res) => {
       },
     });
 
-    const mentioned = await User.findById({ _id: mentions });
+    // const mentioned = await User.findById({ _id: mentions });
     // console.log(mentioned);
     // mentioned.notes.push({
     //   author: req.user._id,
