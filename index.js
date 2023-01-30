@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const session = require("express-session");
+const MemoryStore = require('memorystore')(session)
 const options = {
   origin: [
     "http://localhost:3000",
@@ -32,6 +33,9 @@ app.use(
     secret: secret,
     resave: false,
     saveUninitialized: false,
+    store: new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    }),
     cookie: {
       maxAge: 86400000,
       httpOnly: true,
