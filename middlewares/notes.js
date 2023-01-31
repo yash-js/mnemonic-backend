@@ -5,7 +5,7 @@ exports.getNotesCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
+
       res.json({
         notes: JSON.parse(data),
       });

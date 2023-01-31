@@ -7,7 +7,7 @@ const client = require("../redis");
 const emailRegex = new RegExp(
   /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
 );
-const DEFAULT_EXPIRATION = 24 * 60 * 60;
+const DEFAULT_EXPIRATION = 60;
 
 const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,10}$/);
 

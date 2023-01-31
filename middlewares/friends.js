@@ -5,7 +5,6 @@ exports.getFriendsCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
       res.json(JSON.parse(data));
     } else {
       next();
@@ -17,7 +16,6 @@ exports.getRequestsCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
       res.json(JSON.parse(data));
     } else {
       next();
@@ -29,7 +27,6 @@ exports.getSentRequestsCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
       res.json(JSON.parse(data));
     } else {
       next();
@@ -41,7 +38,6 @@ exports.getAllDataCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
       res.json(JSON.parse(data));
     } else {
       next();

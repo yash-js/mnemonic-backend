@@ -1,7 +1,7 @@
 const Notes = require("../models/Notes");
 const User = require("../models/User");
 const client = require("../redis");
-const DEFAULT_EXPIRATION = 24 * 60 * 60;
+const DEFAULT_EXPIRATION = 60;
 
 exports.createNote = async (req, res) => {
   try {

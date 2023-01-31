@@ -5,7 +5,7 @@ exports.getUserCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
+
       res.json({
         user: JSON.parse(data),
       });
@@ -20,7 +20,7 @@ exports.allUserCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
+
       res.json({
         result: JSON.parse(data),
       });
@@ -35,7 +35,7 @@ exports.getNotificationsCache = (req, res, next) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (data) {
-      console.log(JSON.parse(data));
+
       res.json(JSON.parse(data));
     } else {
       next();
