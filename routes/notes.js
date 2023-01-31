@@ -6,11 +6,12 @@ const {
   getNotes,
 } = require("../controllers/notes");
 const authenticate = require("../middlewares/auth");
+const { getNotesCache } = require("../middlewares/notes");
 const router = express.Router();
 
 router.post("/create", authenticate, createNote);
 router.put("/edit/:id", authenticate, editNote);
 router.delete("/delete/:id", authenticate, deleteNote);
-router.get("/", authenticate, getNotes);
+router.get("/", authenticate,getNotesCache, getNotes);
 
 module.exports = router;

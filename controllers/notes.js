@@ -1,5 +1,7 @@
 const Notes = require("../models/Notes");
 const User = require("../models/User");
+const client = require("../redis");
+const DEFAULT_EXPIRATION = 24 * 60 * 60;
 
 exports.createNote = async (req, res) => {
   try {
@@ -183,6 +185,11 @@ exports.getNotes = async (req, res) => {
       .populate("mentions", ["username", "profilePic"])
       .populate("author", ["username", "profilePic"]);
 
+    client.setEx(
+      `getNotes=${req.user._id}`,
+      DEFAULT_EXPIRATION,
+      JSON.stringify(notes)
+    );
     return res.json({
       notes: notes,
     });

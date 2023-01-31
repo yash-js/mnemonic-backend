@@ -1,8 +1,10 @@
 const User = require("../models/User");
+const client = require("../redis");
 const emailRegex = new RegExp(
   /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
 );
 
+const DEFAULT_EXPIRATION = 24 * 60 * 60;
 const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,10}$/);
 
 exports.getUser = async (req, res) => {
@@ -55,6 +57,26 @@ exports.getUser = async (req, res) => {
         },
       });
 
+    client.setEx(
+      `getUser=${findUser._id}`,
+      DEFAULT_EXPIRATION,
+      JSON.stringify({
+        id: findUser._id,
+        firstName: findUser.firstName,
+        lastName: findUser.lastName,
+        profilePic: findUser.profilePic,
+        username: findUser.username,
+        email: findUser.email,
+        friends: findUser.friends,
+        requests: findUser.requests,
+        token: findUser.token,
+        sentRequests: findUser.sentRequests,
+        latest: findUser.latestNotification,
+        notification: findUser.notification,
+        notes: findUser.notes,
+      })
+    );
+
     return res.json({
       user: {
         id: findUser._id,
@@ -80,17 +102,14 @@ exports.getUser = async (req, res) => {
   }
 };
 
-exports.searchUser = async (req, res) => {
+exports.allUser = async (req, res) => {
   try {
-    const { query } = req.params;
+    const result = await User.find(
+      {},
+      { _id: 1, username: 1, profilePic: 1, firstName: 1, lastName: 1 }
+    );
 
-    const result = await User.find({
-      $or: [{ firstName: { $regex: query } }, { username: { $regex: query } }],
-      _id: {
-        $nin: req.user._id,
-      },
-    });
-
+    client.setEx(`allUser`, DEFAULT_EXPIRATION, JSON.stringify(result));
     if (result) {
       return res.json({
         length: result.length,
@@ -177,6 +196,14 @@ exports.getNotifications = async (req, res) => {
         "username",
         "profilePic",
       ]);
+    client.setEx(
+      `notifications=${req.user._id}`,
+      DEFAULT_EXPIRATION,
+      JSON.stringify({
+        notification: notifications.notification,
+        latest: notifications.latestNotification,
+      })
+    );
     return res.json({
       notification: notifications.notification,
       latest: notifications.latestNotification,

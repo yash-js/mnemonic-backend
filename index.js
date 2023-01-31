@@ -4,7 +4,16 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const session = require("express-session");
-const MemoryStore = require('memorystore')(session)
+const MemoryStore = require("memorystore")(session);
+const client = require("./redis");
+dotenv.config({
+  path: "./config.env",
+});
+
+client.connect().then(() => {
+  console.log("REDIS CONNECTED");
+});
+
 const options = {
   origin: [
     "http://localhost:3000",
@@ -15,9 +24,6 @@ const options = {
   credentials: true,
 };
 
-dotenv.config({
-  path: "./config.env",
-});
 const secret = process.env.JWT_SECRET;
 
 app.use(cors(options));
@@ -34,7 +40,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: new MemoryStore({
-      checkPeriod: 86400000
+      checkPeriod: 86400000,
     }),
     cookie: {
       maxAge: 86400000,
