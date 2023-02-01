@@ -19,9 +19,9 @@ const {
 } = require("../middlewares/friends");
 const router = express.Router();
 
-router.get("/", authenticate, getFriendsCache, getFriends);
+router.get("/", authenticate, getFriends);
 
-router.get("/requests", authenticate, getRequestsCache, getRequests);
+router.get("/requests", authenticate, getRequests);
 
 router.post("/add/:id", authenticate, addFriend);
 
@@ -33,8 +33,8 @@ router.delete("/remove/:id", authenticate, removeFriend);
 
 router.get("/suggestions", authenticate, getSuggestions);
 
-router.get("/sent", authenticate, getSentRequestsCache, getSentRequests);
+router.get("/sent", authenticate, getSentRequests);
 
-router.get("/all", authenticate, getAllDataCache, getAllFriendsData);
+router.get("/all", authenticate, getAllFriendsData);
 
 module.exports = router;

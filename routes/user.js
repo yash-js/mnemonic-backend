@@ -11,8 +11,8 @@ const router = express.Router();
 const authenticate = require("../middlewares/auth");
 const { getUserCache, allUserCache, getNotificationsCache } = require("../middlewares/user");
 
-router.get("/getuser", authenticate, getUserCache, getUser);
-router.get("/all", authenticate, allUserCache, allUser);
+router.get("/getuser", authenticate, getUser);
+router.get("/all", authenticate, allUser);
 router.put("/edit", authenticate, editUser);
 router.get(
   "/notifications",

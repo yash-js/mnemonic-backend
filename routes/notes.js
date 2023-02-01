@@ -12,6 +12,6 @@ const router = express.Router();
 router.post("/create", authenticate, createNote);
 router.put("/edit/:id", authenticate, editNote);
 router.delete("/delete/:id", authenticate, deleteNote);
-router.get("/", authenticate,getNotesCache, getNotes);
+router.get("/", authenticate, getNotes);
 
 module.exports = router;
