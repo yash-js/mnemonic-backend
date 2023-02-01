@@ -14,11 +14,13 @@ client.connect().then(() => {
   console.log("REDIS CONNECTED");
 });
 
+const CLIENT_URL =  process.env.CLIENT_URL
+
 const options = {
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
-    process.env.CLIENT_URL,
+    CLIENT_URL,
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
