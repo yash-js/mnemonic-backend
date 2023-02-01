@@ -10,6 +10,8 @@ dotenv.config({
   path: "./config.env",
 });
 
+require("./db/conn");
+
 client.connect().then(() => {
   console.log("REDIS CONNECTED");
 });
@@ -51,7 +53,6 @@ app.use(
   })
 );
 
-require("./db/conn");
 app.use((req, res, next) => {
   if (!req.session.user && req.cookies.user) {
     res.clearCookie("user");
