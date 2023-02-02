@@ -5,16 +5,12 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const session = require("express-session");
 const MemoryStore = require("memorystore")(session);
-const client = require("./redis");
 dotenv.config({
   path: "./config.env",
 });
 
 require("./db/conn");
 
-client.connect().then(() => {
-  console.log("REDIS CONNECTED");
-});
 
 const CLIENT_URL =  process.env.CLIENT_URL
 
