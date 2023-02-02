@@ -1,7 +1,6 @@
 const User = require("../models/User");
-const client = require("../redis");
+
 const { transporter } = require("./auth");
-const DEFAULT_EXPIRATION = 60;
 
 exports.addFriend = async (req, res) => {
   try {
@@ -16,12 +15,7 @@ exports.addFriend = async (req, res) => {
             from: req.user._id,
             message: "sent you friend request!",
             event: "added",
-          },
-          notification: {
-            from: req.user._id,
-            message: "sent you friend request!",
-            event: "added",
-          },
+          }
         },
       });
       await currentUser.updateOne({
@@ -86,11 +80,7 @@ exports.acceptFriend = async (req, res) => {
           latestNotification: {
             from: req.user._id,
             message: "Accepted your friend request!",
-          },
-          notification: {
-            from: req.user._id,
-            message: "Accepted your friend request!",
-          },
+          }
         },
         $pull: {
           sentRequests: id,
@@ -200,11 +190,6 @@ exports.getFriends = async (req, res) => {
       "friends",
       ["firstName", "lastName", "username", "profilePic"]
     );
-    client.set(
-      `friends=${user._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify(user.friends)
-    );
     res.json(user.friends);
   } catch (error) {
     console.log(error);
@@ -219,11 +204,6 @@ exports.getRequests = async (req, res) => {
     const user = await User.findById({ _id: req.user._id }).populate(
       "requests",
       ["firstName", "lastName", "username", "profilePic"]
-    );
-    client.set(
-      `requests=${user._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify(user.friends)
     );
     res.json(user.requests);
   } catch (error) {
@@ -253,11 +233,6 @@ exports.getSentRequests = async (req, res) => {
       "sentRequests",
       ["firstName", "lastName", "username", "profilePic"]
     );
-    client.set(
-      `sentRequests=${user._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify(user.friends)
-    );
     res.json(user.sentRequests);
   } catch (error) {
     console.log(error);
@@ -278,15 +253,7 @@ exports.getAllFriendsData = async (req, res) => {
         "username",
         "profilePic",
       ]);
-    client.setEx(
-      `allData=${user._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify({
-        friends: user?.friends,
-        request: user?.requests,
-        sentRequests: user?.sentRequests,
-      })
-    );
+
     res.json({
       friends: user?.friends,
       request: user?.requests,

@@ -1,4 +1,4 @@
-const client = require("../redis");
+
 
 exports.getFriendsCache = (req, res, next) => {
   client.get(`friends=${req.user._id}`, (err, data) => {

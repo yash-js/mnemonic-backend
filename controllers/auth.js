@@ -3,11 +3,10 @@ const nodemailer = require("nodemailer");
 // const { cloudinary } = require("../utils/cloudinary")
 const bcrypt = require("bcryptjs");
 const Post = require("../models/Post");
-const client = require("../redis");
+
 const emailRegex = new RegExp(
   /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
 );
-const DEFAULT_EXPIRATION = 60;
 
 const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,10}$/);
 
@@ -184,12 +183,6 @@ exports.signin = async (req, res) => {
         "username",
         "profilePic",
       ])
-      .populate("notification.from", [
-        "firstName",
-        "lastName",
-        "username",
-        "profilePic",
-      ])
       .populate("notes", [
         "noteTitle",
         "noteContent",
@@ -222,24 +215,7 @@ exports.signin = async (req, res) => {
     if (!checkPassword)
       return res.status(400).json({ error: "Iavalid Credentials!" });
     req.session.user = existingUser._id;
-    client.setEx(
-      `getUser=${existingUser._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify({
-        id: existingUser._id,
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-        profilePic: existingUser.profilePic,
-        username: existingUser.username,
-        email: existingUser.email,
-        friends: existingUser.friends,
-        requests: existingUser.requests,
-        sentRequests: existingUser.sentRequests,
-        latest: existingUser.latestNotification,
-        notification: existingUser.notification,
-        notes: existingUser.notes,
-      })
-    );
+
     return res.json({
       message: "Success!",
       user: {

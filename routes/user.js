@@ -17,7 +17,6 @@ router.put("/edit", authenticate, editUser);
 router.get(
   "/notifications",
   authenticate,
-  getNotificationsCache,
   getNotifications
 );
 router.put("/notifications", authenticate, readNotifications);

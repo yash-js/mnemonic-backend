@@ -1,10 +1,9 @@
 const User = require("../models/User");
-const client = require("../redis");
+
 const emailRegex = new RegExp(
   /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
 );
 
-const DEFAULT_EXPIRATION = 60;
 const usernameRegex = new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,10}$/);
 
 exports.getUser = async (req, res) => {
@@ -21,12 +20,6 @@ exports.getUser = async (req, res) => {
         "profilePic",
       ])
       .populate("latestNotification.from", [
-        "firstName",
-        "lastName",
-        "username",
-        "profilePic",
-      ])
-      .populate("notification.from", [
         "firstName",
         "lastName",
         "username",
@@ -56,26 +49,6 @@ exports.getUser = async (req, res) => {
           select: { username: 1, profilePic: 1 },
         },
       });
-
-    client.setEx(
-      `getUser=${findUser._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify({
-        id: findUser._id,
-        firstName: findUser.firstName,
-        lastName: findUser.lastName,
-        profilePic: findUser.profilePic,
-        username: findUser.username,
-        email: findUser.email,
-        friends: findUser.friends,
-        requests: findUser.requests,
-        token: findUser.token,
-        sentRequests: findUser.sentRequests,
-        latest: findUser.latestNotification,
-        notification: findUser.notification,
-        notes: findUser.notes,
-      })
-    );
 
     return res.json({
       user: {
@@ -109,7 +82,6 @@ exports.allUser = async (req, res) => {
       { _id: 1, username: 1, profilePic: 1, firstName: 1, lastName: 1 }
     );
 
-    client.setEx(`allUser`, DEFAULT_EXPIRATION, JSON.stringify(result));
     if (result) {
       return res.json({
         length: result.length,
@@ -181,14 +153,7 @@ exports.editUser = async (req, res) => {
 
 exports.getNotifications = async (req, res) => {
   try {
-    const notifications = await User.findById(req.user._id)
-      .populate("notification.from", [
-        "_id",
-        "firstName",
-        "lastName",
-        "username",
-        "profilePic",
-      ])
+    const notifications = await User.findById(req.user._id).sort( {updatedAt: 1})
       .populate("latestNotification.from", [
         "_id",
         "firstName",
@@ -196,16 +161,8 @@ exports.getNotifications = async (req, res) => {
         "username",
         "profilePic",
       ]);
-    client.setEx(
-      `notifications=${req.user._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify({
-        notification: notifications.notification,
-        latest: notifications.latestNotification,
-      })
-    );
+
     return res.json({
-      notification: notifications.notification,
       latest: notifications.latestNotification,
     });
   } catch (error) {

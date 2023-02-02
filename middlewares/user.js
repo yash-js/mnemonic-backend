@@ -1,4 +1,4 @@
-const client = require("../redis");
+
 
 exports.getUserCache = (req, res, next) => {
   client.get(`getUser=${req.user._id}`, (err, data) => {

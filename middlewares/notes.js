@@ -1,4 +1,4 @@
-const client = require("../redis");
+
 
 exports.getNotesCache = (req, res, next) => {
   client.get(`getNotes=${req.user._id}`, (err, data) => {

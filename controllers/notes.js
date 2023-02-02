@@ -1,7 +1,5 @@
 const Notes = require("../models/Notes");
 const User = require("../models/User");
-const client = require("../redis");
-const DEFAULT_EXPIRATION = 60;
 
 exports.createNote = async (req, res) => {
   try {
@@ -12,8 +10,9 @@ exports.createNote = async (req, res) => {
       noteContent, //content
       notedOn, //date
       noteType,
-      // mentions,
     };
+
+    if (mentions && mentions.length > 0) noteData.mentions = mentions;
 
     if (!noteTitle || !noteContent || !notedOn) {
       return res.status(400).json({
@@ -33,6 +32,20 @@ exports.createNote = async (req, res) => {
         notes: savedNote._id,
       },
     });
+
+    await User.updateMany(
+      { _id: { $in: mentions } },
+      {
+        $push: {
+          notes: saveNote._id,
+          latestNotification: {
+            from: req.user._id,
+            message: `${req.user.username} has mentioned you in a note`,
+          }
+        },
+      },
+      { multi: true }
+    );
 
     // const mentioned = await User.findById({ _id: mentions });
     // console.log(mentioned);
@@ -185,11 +198,6 @@ exports.getNotes = async (req, res) => {
       .populate("mentions", ["username", "profilePic"])
       .populate("author", ["username", "profilePic"]);
 
-    client.setEx(
-      `getNotes=${req.user._id}`,
-      DEFAULT_EXPIRATION,
-      JSON.stringify(notes)
-    );
     return res.json({
       notes: notes,
     });
