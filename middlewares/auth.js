@@ -10,9 +10,11 @@ const authenticate = async (req, res, next) => {
       req.userId = req.user._id;
       next();
     } else {
+      res.clearCookie("user");
       return res.status(401).json({ error: "USER NOT FOUND" });
     }
   } catch (err) {
+    res.clearCookie("user");
     console.log(err);
     return res.status(401).json({ error: "USER NOT FOUND" });
   }

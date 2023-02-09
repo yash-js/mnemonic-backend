@@ -179,13 +179,13 @@ exports.editNote = async (req, res) => {
 
 exports.deleteNote = async (req, res) => {
   try {
-    await Notes.findByIdAndUpdate(req.params.id, req.body);
+    await Notes.findByIdAndDelete(req.params.id, req.body);
 
     return res.json({
       message: "Note Deleted!",
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       error: "Something Went Wrong!",
       errMsg: error.message,
     });
