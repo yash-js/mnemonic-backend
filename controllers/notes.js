@@ -41,7 +41,7 @@ exports.createNote = async (req, res) => {
           latestNotification: {
             from: req.user._id,
             message: `${req.user.username} has mentioned you in a note`,
-          }
+          },
         },
       },
       { multi: true }
@@ -152,7 +152,24 @@ exports.editNote = async (req, res) => {
     const noteId = req.params.id;
     // Username Validations
 
-    if (req.body && req.body.noteTitle) {
+    const note = await Notes.findById(noteId);
+
+    if (!req.body.noteContent && !req.body.noteTitle) {
+      return res.status(400).json({
+        error: "Nothing to change",
+      });
+    }
+
+    if (
+      (req.body.noteContent === note.noteContent &&
+        req.body.noteTitle === note.noteTitle) ||
+      (req.body.noteContent === note.noteContent && !req.body.noteTitle)
+    ) {
+      return res.status(400).json({
+        error: "Nothing to change",
+      });
+    }
+    if (req.body && !req.body.noteContent && req.body.noteTitle) {
       const existingNoteTitle = await Notes.findOne({
         noteTitle: req.body.noteTitle,
       });
@@ -162,9 +179,18 @@ exports.editNote = async (req, res) => {
           error:
             "Note title already taken, Please choose different Note title!",
         });
+      else {
+        await Notes.findByIdAndUpdate(noteId, {
+          noteTitle: req.body.noteTitle,
+        });
+      }
     }
 
-    await Notes.findByIdAndUpdate(noteId, req.body);
+    if (req.body && req.body.noteContent && !req.body.noteTitle) {
+      await Notes.findByIdAndUpdate(noteId, {
+        noteContent: req.body.noteContent,
+      });
+    }
 
     return res.json({
       message: "Note Updated!",
@@ -179,8 +205,14 @@ exports.editNote = async (req, res) => {
 
 exports.deleteNote = async (req, res) => {
   try {
-    await Notes.findByIdAndDelete(req.params.id, req.body);
+    const user = await User.findById(req.user._id);
 
+    await Notes.findByIdAndDelete(req.params.id, req.body);
+    await user.updateOne({
+      $pull: {
+        notes: req.params.id,
+      },
+    });
     return res.json({
       message: "Note Deleted!",
     });
