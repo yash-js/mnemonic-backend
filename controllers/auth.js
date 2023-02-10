@@ -149,7 +149,8 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
   try {
     res.clearCookie("user");
-    req.session.user = undefined;
+    req.session = null;
+    req.session.destroy(); // Deletes the session in the database.
     req.token = undefined;
     req.user = undefined;
     req.userId = undefined;
@@ -246,7 +247,8 @@ exports.signin = async (req, res) => {
 exports.signout = async (req, res) => {
   try {
     res.clearCookie("user");
-    req.session.user = undefined;
+    req.session = null;
+    req.session.destroy(); 
     req.token = undefined;
     req.user = undefined;
     req.userId = undefined;
