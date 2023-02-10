@@ -216,6 +216,7 @@ exports.signin = async (req, res) => {
 
     if (!checkPassword)
       return res.status(400).json({ error: "Iavalid Credentials!" });
+
     req.session.user = existingUser._id;
 
     return res.json({

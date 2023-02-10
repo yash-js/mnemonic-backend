@@ -41,11 +41,7 @@ exports.createNote = async (req, res) => {
 
     if (mentions && mentions.length > 0) noteData.mentions = mentions;
 
-    if (!noteTitle || !noteContent || !notedOn) {
-      return res.status(400).json({
-        error: "All Fields are required!",
-      });
-    }
+
 
     const saveNote = new Notes(noteData);
     await saveNote.save();
