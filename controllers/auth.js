@@ -148,10 +148,8 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    res.clearCookie("user");
     if (req.session.user) {
-      req.session = null;
-      req.cookies.user = null;
+      delete req.session;
     }
     const { password, username } = req.body;
     if (!username)
@@ -245,8 +243,7 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
   try {
-    res.clearCookie("user");
-    req.session = null;
+    delete req.session;
     req.token = undefined;
     req.user = undefined;
     req.userId = undefined;
