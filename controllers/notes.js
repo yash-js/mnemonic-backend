@@ -55,20 +55,21 @@ exports.createNote = async (req, res) => {
         notes: savedNote._id,
       },
     });
-
-    await User.updateMany(
-      { _id: { $in: mentions } },
-      {
-        $push: {
-          notes: saveNote._id,
-          latestNotification: {
-            from: req.user._id,
-            message: `${req.user.username} has mentioned you in a note`,
+    if (mentions && mentions.length > 0) {
+      await User.updateMany(
+        { _id: { $in: mentions } },
+        {
+          $push: {
+            notes: saveNote._id,
+            latestNotification: {
+              from: req.user._id,
+              message: `${req.user.username} has mentioned you in a note`,
+            },
           },
         },
-      },
-      { multi: true }
-    );
+        { multi: true }
+      );
+    }
 
     // const mentioned = await User.findById({ _id: mentions });
     // console.log(mentioned);
