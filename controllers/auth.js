@@ -149,10 +149,10 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
   try {
     res.clearCookie("user");
-    req.session = null;
-    req.token = undefined;
-    req.user = undefined;
-    req.userId = undefined;
+    if (req.session.user) {
+      req.session = null;
+      req.cookies.user = null;
+    }
     const { password, username } = req.body;
     if (!username)
       return res.status(400).json({
