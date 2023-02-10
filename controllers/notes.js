@@ -14,28 +14,28 @@ exports.createNote = async (req, res) => {
       noteContent,
       notedOn,
       mentions,
-      noteType,
       summary,
       image,
+      mnemoniccontent,
     } = req.body;
     let noteData;
-    if (noteType === "normal") {
+    if (noteContent && noteContent.length > 0 && !mnemoniccontent) {
       noteData = {
         author: req.user._id,
         noteTitle, //title
         noteContent, //content
         notedOn, //date
-        noteType,
+        noteType: "normal",
       };
-    } else {
+    } else if (mnemoniccontent && mnemoniccontent.length > 0) {
       noteData = {
         author: req.user._id,
         noteTitle, //title
-        noteContent, //content
         notedOn, //date
-        noteType,
+        noteType: "mnemonic",
         summary,
         image,
+        noteContent: mnemoniccontent,
       };
     }
 
@@ -290,14 +290,12 @@ exports.genImage = async (req, res) => {
 
 exports.summarize = async (req, res) => {
   try {
-    console.log();
     const resp = await ai.createCompletion({
       model: "text-davinci-003",
       prompt: `Summarize this for a second-grade student:${req.params.prompt}`,
       temperature: 0.6,
-      max_tokens: 100,
+      max_tokens: 1000,
     });
-    console.log(resp.data);
     res.json({ text: resp.data?.choices[0]?.text.replace(".", "") });
   } catch (error) {
     res.status(400).json({ error: error.message });
