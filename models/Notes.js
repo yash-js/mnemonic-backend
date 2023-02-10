@@ -27,6 +27,12 @@ const notesSchema = new Schema(
       type: String,
       default: "normal",
     },
+    summary: {
+      type: String,
+    },
+    image:{
+      type: String,
+    }
   },
   { timestamps: true }
 );

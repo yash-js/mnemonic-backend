@@ -9,14 +9,35 @@ const ai = new openai.OpenAIApi(configuration);
 
 exports.createNote = async (req, res) => {
   try {
-    const { noteTitle, noteContent, notedOn, mentions, noteType } = req.body;
-    const noteData = {
-      author: req.user._id,
-      noteTitle, //title
-      noteContent, //content
-      notedOn, //date
+    const {
+      noteTitle,
+      noteContent,
+      notedOn,
+      mentions,
       noteType,
-    };
+      summary,
+      image,
+    } = req.body;
+    let noteData;
+    if (noteType === "normal") {
+      noteData = {
+        author: req.user._id,
+        noteTitle, //title
+        noteContent, //content
+        notedOn, //date
+        noteType,
+      };
+    } else {
+      noteData = {
+        author: req.user._id,
+        noteTitle, //title
+        noteContent, //content
+        notedOn, //date
+        noteType,
+        summary,
+        image,
+      };
+    }
 
     if (mentions && mentions.length > 0) noteData.mentions = mentions;
 

@@ -30,6 +30,7 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use(
   session({
+    name: "user",
     key: "user",
     secret: secret,
     resave: false,
@@ -38,6 +39,7 @@ app.use(
       checkPeriod: 86400000,
     }),
     cookie: {
+      sameSite: true,
       maxAge: 86400000,
       httpOnly: true,
     },
@@ -52,8 +54,6 @@ app.use((req, res, next) => {
     next();
   }
 });
-
-
 
 app.use(require("./routes/auth"));
 app.use("/user", require("./routes/user"));

@@ -148,9 +148,11 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    if (req.cookies.user && !req.session.user) {
-      res.clearCookie("user");
-    }
+    res.clearCookie("user");
+    req.session.user = undefined;
+    req.token = undefined;
+    req.user = undefined;
+    req.userId = undefined;
     const { password, username } = req.body;
     if (!username)
       return res.status(400).json({
