@@ -51,7 +51,6 @@ app.use((req, res, next) => {
     (req?.session?.user === undefined || req?.session?.user === null) &&
     (req?.cookies?.user !== null || req?.cookies?.user !== undefined)
   ) {
-    req.session.user = null;
     res.clearCookie("user");
     next();
   } else {
