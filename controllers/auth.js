@@ -148,11 +148,9 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    res.clearCookie("user");
-    req.session.user = undefined;
-    req.token = undefined;
-    req.user = undefined;
-    req.userId = undefined;
+    if (req.session.user) {
+      delete req.session;
+    }
     const { password, username } = req.body;
     if (!username)
       return res.status(400).json({
@@ -245,8 +243,7 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
   try {
-    res.clearCookie("user");
-    req.session.user = undefined;
+    delete req.session;
     req.token = undefined;
     req.user = undefined;
     req.userId = undefined;
