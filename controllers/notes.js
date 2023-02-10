@@ -1,5 +1,11 @@
 const Notes = require("../models/Notes");
 const User = require("../models/User");
+const openai = require("openai");
+const configuration = new openai.Configuration({
+  apiKey: process.env.OPENAI_API,
+});
+
+const ai = new openai.OpenAIApi(configuration);
 
 exports.createNote = async (req, res) => {
   try {
@@ -238,5 +244,41 @@ exports.getNotes = async (req, res) => {
       error: "Something Went Wrong!",
       errMsg: error.message,
     });
+  }
+};
+
+exports.genImage = async (req, res) => {
+  try {
+    const { prompt } = req.params;
+    const aiResponse = await ai.createImage({
+      prompt,
+      n: 1,
+      size: "256x256",
+      response_format: "b64_json",
+    });
+
+    // const image = aiResponse.data.data[0].b64_json;
+
+    res.json({
+      image: `data:image/jpeg;base64,${aiResponse.data.data[0].b64_json}`,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.summarize = async (req, res) => {
+  try {
+    console.log();
+    const resp = await ai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `Summarize this for a second-grade student:${req.params.prompt}`,
+      temperature: 0.6,
+      max_tokens: 100,
+    });
+    console.log(resp.data);
+    res.json({ text: resp.data?.choices[0]?.text.replace(".", "") });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
