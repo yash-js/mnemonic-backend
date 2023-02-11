@@ -148,9 +148,7 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    if (req.session.user) {
-      delete req.session;
-    }
+    let token;
     const { password, username } = req.body;
     if (!username)
       return res.status(400).json({
@@ -215,8 +213,10 @@ exports.signin = async (req, res) => {
     if (!checkPassword)
       return res.status(400).json({ error: "Iavalid Credentials!" });
 
-    req.session.user = existingUser._id;
-
+    token = await existingUser.generateToken();
+    await res.cookie("authToken", token, {
+      httpOnly: true,
+    });
     return res.json({
       message: "Success!",
       user: {
@@ -232,6 +232,7 @@ exports.signin = async (req, res) => {
         latest: existingUser.latestNotification,
         notification: existingUser.notification,
         notes: existingUser.notes,
+        token,
       },
     });
   } catch (error) {
@@ -243,11 +244,16 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
   try {
-    delete req.session;
-    req.token = undefined;
-    req.user = undefined;
-    req.userId = undefined;
-    return res.send("Success");
+    const getUser = await User.findOne({
+      _id: req.user._id,
+      token: req.cookies.authToken,
+    });
+
+    getUser.token = undefined;
+    await getUser.save();
+    res.clearCookie("authToken", {
+      path: "/",
+    });
   } catch (error) {
     console.log(error);
   }

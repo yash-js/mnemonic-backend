@@ -3,8 +3,8 @@ const app = express();
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const session = require("express-session");
-const MemoryStore = require("memorystore")(session);
+
+
 dotenv.config({
   path: "./config.env",
 });
@@ -19,7 +19,6 @@ const options = {
   credentials: true,
 };
 
-const secret = process.env.JWT_SECRET;
 
 app.use(cors(options));
 app.options("*", cors(options));
@@ -27,36 +26,6 @@ app.options("*", cors(options));
 app.use(cookieParser());
 app.use(express.json({ limit: "40mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-
-app.use(
-  session({
-    name: "user",
-    key: "user",
-    secret: secret,
-    resave: false,
-    saveUninitialized: false,
-    store: new MemoryStore({
-      checkPeriod: 86400000,
-    }),
-    cookie: {
-      sameSite: true,
-      maxAge: 86400000,
-      httpOnly: true,
-    },
-  })
-);
-
-app.use((req, res, next) => {
-  if (
-    (req?.session?.user === undefined || req?.session?.user === null) &&
-    (req?.cookies?.user !== null || req?.cookies?.user !== undefined)
-  ) {
-    res.clearCookie("user");
-    next();
-  } else {
-    next();
-  }
-});
 
 app.use(require("./routes/auth"));
 app.use("/user", require("./routes/user"));
