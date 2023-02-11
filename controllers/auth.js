@@ -244,17 +244,10 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
   try {
-    const getUser = await User.findOne({
-      _id: req.user._id,
-      token: req.cookies.authToken,
-    });
-
-    getUser.token = undefined;
-    await getUser.save();
-    res.clearCookie("authToken", {
-      path: "/",
-    });
+    res.clearCookie("authToken");
+    res.json({ msg: "success" });
   } catch (error) {
     console.log(error);
+    res.json(error);
   }
 };
