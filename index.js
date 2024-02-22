@@ -14,7 +14,7 @@ require("./db/conn");
 const CLIENT_URL = process.env.CLIENT_URL;
 
 const options = {
-  origin: ["http://localhost:3000", "http://localhost:3001", CLIENT_URL],
+  origin: [CLIENT_URL],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
