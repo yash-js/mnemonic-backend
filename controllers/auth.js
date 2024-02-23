@@ -1,6 +1,5 @@
 const User = require("../models/User");
 const nodemailer = require("nodemailer");
-// const { cloudinary } = require("../utils/cloudinary")
 const bcrypt = require("bcryptjs");
 const Post = require("../models/Post");
 
@@ -58,18 +57,7 @@ exports.signup = async (req, res) => {
         field: "email",
         error: "User Already Exists!",
       });
-    // if (
-    //   !firstName ||
-    //   !lastName ||
-    //   !email ||
-    //   !password ||
-    //   !cpassword ||
-    //   !username ||
-    //   !profilePic
-    // )
-    //   return res.status(400).json({
-    //     error: "All Fields are required!",
-    //   });
+  
     if (!usernameRegex.test(username))
       return res.status(400).json({
         field: "username",
